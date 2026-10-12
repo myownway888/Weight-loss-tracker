@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive Weight Loss Tracker & Indian Veg Portion Calculator</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            accent: {
+              500: '#6366f1',
+              600: '#4f46e5',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.4);
+      border-radius: 9999px;
+    }
+
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .card-box {
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        background: white !important;
+        color: black !important;
+      }
+      .text-white, .text-slate-100, .text-slate-200, .text-slate-300 {
+        color: #0f172a !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
+
+  <header class="sticky top-0 z-40 bg-slate-900/90 border-b border-slate-800/80 no-print backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-white font-bold text-xl">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              FitCraft <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">Pro Veg</span>
+            </h1>
+            <p class="text-xs text-slate-400 hidden sm:block">Adaptive Weight & Indian Portion Engine</p>
+          </div>
+        </div>
+
+        <!-- TWO MAIN TABS NAVIGATION -->
+        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner">
+          <button onclick="switchMainTab('meals')" id="tabNavMeals" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-2 bg-brand-600 text-white shadow-md">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Meal Plan</span>
+          </button>
+          <button onclick="switchMainTab('logs')" id="tabNavLogs" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Weight Logs</span>
+          </button>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="flex items-center gap-2">
+          <button onclick="exportJSONData()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center gap-1.5" title="Export JSON Data">
+            <i class="fa-solid fa-download text-brand-400"></i>
+            <span class="hidden md:inline">Export</span>
+          </button>
+          
+          <label class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center gap-1.5 cursor-pointer" title="Import JSON Data">
+            <i class="fa-solid fa-upload text-accent-500"></i>
+            <span class="hidden md:inline">Import</span>
+            <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importJSONData(event)" />
+          </label>
+
+          <button onclick="window.print()" class="px-3 py-1.5 text-xs font-medium bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg border border-emerald-500/30 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-print"></i>
+            <span class="hidden sm:inline">Print / PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- TOP OVERVIEW PROFILE CARD -->
+    <section class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden card-box">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+        <div class="space-y-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-brand-500/20 text-brand-300 border border-brand-500/30">
+              <i class="fa-solid fa-user-gear mr-1"></i> 34yo AC Tech (1.48 Activity)
+            </span>
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <i class="fa-solid fa-bullseye mr-1"></i> Target: 1.0 kg / week deficit
+            </span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Adaptive Macro & Portion Engine</h2>
+          <p class="text-xs sm:text-sm text-slate-400 max-w-2xl">
+            Calculates raw high-protein vegetarian ingredients adjusted dynamically as your weight updates week by week.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+          <div class="text-center p-2">
+            <span class="text-xs text-slate-400 block font-medium">Height</span>
+            <span class="text-lg font-bold text-slate-100">5'11" <span class="text-xs text-slate-500 font-normal">(180cm)</span></span>
+          </div>
+          <div class="text-center p-2 border-l border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Start Weight</span>
+            <span class="text-lg font-bold text-slate-100">111.0 <span class="text-xs text-slate-500 font-normal">kg</span></span>
+          </div>
+          <div class="text-center p-2 border-l border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Current</span>
+            <span id="statCurrentWeight" class="text-lg font-bold text-brand-400">111.0 <span class="text-xs text-slate-500 font-normal">kg</span></span>
+          </div>
+          <div class="text-center p-2 border-l border-slate-800">
+            <span class="text-xs text-slate-400 block font-medium">Goal</span>
+            <span class="text-lg font-bold text-emerald-400">99.0 <span class="text-xs text-slate-500 font-normal">kg</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MACRO STAT CARDS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-md flex items-center gap-4 card-box">
+        <div class="p-3 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xl shrink-0">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-400">Daily Calorie Target</p>
+          <div class="flex items-baseline gap-1.5 mt-0.5">
+            <span id="metricCalTarget" class="text-2xl font-bold text-white">--</span>
+            <span class="text-xs text-slate-400">kcal/day</span>
+          </div>
+          <p id="metricDeficitText" class="text-[11px] text-orange-400/90 mt-0.5 font-medium">--</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-md flex items-center gap-4 card-box">
+        <div class="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xl shrink-0">
+          <i class="fa-solid fa-drumstick-bite"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-400">Daily Protein Target</p>
+          <div class="flex items-baseline gap-1.5 mt-0.5">
+            <span id="metricProteinTarget" class="text-2xl font-bold text-white">--</span>
+            <span class="text-xs text-slate-400">grams</span>
+          </div>
+          <p class="text-[11px] text-indigo-400/90 mt-0.5 font-medium">High Protein (~1.8g/kg)</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-md flex items-center gap-4 card-box">
+        <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xl shrink-0">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-400">Fats & Net Carbs Target</p>
+          <div class="flex items-center gap-2 mt-0.5">
+            <span id="metricFatTarget" class="text-lg font-bold text-emerald-400">--g</span>
+            <span class="text-slate-600">/</span>
+            <span id="metricCarbTarget" class="text-lg font-bold text-cyan-400">--g</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Med-High Fat / Low Net Carb</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-md flex items-center gap-4 card-box">
+        <div class="p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xl shrink-0">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-400">Weight Loss Progress</p>
+          <div class="flex items-baseline gap-1.5 mt-0.5">
+            <span id="metricLost" class="text-2xl font-bold text-purple-300">0.0</span>
+            <span class="text-xs text-slate-400">kg lost</span>
+          </div>
+          <p id="metricRemaining" class="text-[11px] text-purple-400/90 mt-0.5 font-medium">12.0 kg remaining</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="tabViewMeals" class="space-y-6">
+      
+      <!-- DINNER TOGGLE BAR -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 card-box">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Dinner Preference Option</h3>
+            <p class="text-xs text-slate-400">Switch between Creamy Hummus Bowl or Warm Tofu & Chana Daal Curry</p>
+          </div>
+        </div>
+        
+        <div class="inline-flex p-1 bg-slate-950 border border-slate-800 rounded-xl">
+          <button onclick="setDinnerOption('A')" id="btnDinnerA" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-brand-600 text-white shadow-md">
+            Option A: Hummus & Tofu
+          </button>
+          <button onclick="setDinnerOption('B')" id="btnDinnerB" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200">
+            Option B: Tofu & Chana Daal
+          </button>
+        </div>
+      </div>
+
+      <!-- DAILY MEAL RECIPES GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- MEAL 1 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-lg relative overflow-hidden card-box">
+          <div>
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center border border-amber-500/30">M1</span>
+                <h3 class="font-bold text-base text-white">Breakfast Shake</h3>
+              </div>
+              <span id="m1Cal" class="text-xs font-bold px-2 py-1 bg-slate-800 text-amber-300 rounded-md">-- kcal</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Rolled Oats <span class="text-[10px] text-slate-500">(Raw/Dry)</span></span>
+                <span id="m1Oats" class="font-bold text-brand-400">-- g</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Full-Cream Curd / Dahi</span>
+                <span id="m1Curd" class="font-bold text-brand-400">-- g</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Natural Peanut Butter</span>
+                <span id="m1PB" class="font-bold text-brand-400">-- g</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Water / Ice</span>
+                <span class="font-semibold text-slate-400">As needed (250-350 ml)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Blend 60 sec until smooth</span>
+            <span id="m1Protein" class="font-semibold text-indigo-300">P: --g</span>
+          </div>
+        </div>
+
+        <!-- MEAL 2 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-lg relative overflow-hidden card-box">
+          <div>
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 text-xs font-bold flex items-center justify-center border border-orange-500/30">M2</span>
+                <h3 class="font-bold text-base text-white">Lunch: Paneer/Curd Bhurji</h3>
+              </div>
+              <span id="m2Cal" class="text-xs font-bold px-2 py-1 bg-slate-800 text-orange-300 rounded-md">-- kcal</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Block Paneer <span class="text-[10px] text-slate-500">(Raw Weigh)</span></span>
+                <span id="m2Paneer" class="font-bold text-brand-400">-- g</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Pure Ghee / Mustard Oil</span>
+                <span id="m2Ghee" class="font-bold text-brand-400">-- g</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Curd / Dahi (Gravy base)</span>
+                <span id="m2Curd" class="font-bold text-brand-400">-- g</span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+                <span class="text-slate-300 font-medium">Onion, Tomato, Green Chilis</span>
+                <span class="font-semibold text-slate-400">100g Onion / 100g Tomato</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Sauté in ghee & simmer spices</span>
+            <span id="m2Protein" class="font-semibold text-indigo-300">P: --g</span>
+          </div>
+        </div>
+
+        <!-- MEAL 3 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-lg relative overflow-hidden card-box">
+          <div>
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center border border-emerald-500/30">M3</span>
+                <h3 id="m3Title" class="font-bold text-base text-white">Dinner: Option A</h3>
+              </div>
+              <span id="m3Cal" class="text-xs font-bold px-2 py-1 bg-slate-800 text-emerald-300 rounded-md">-- kcal</span>
+            </div>
+
+            <div id="m3IngredientsContainer" class="space-y-3 text-xs"></div>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <span id="m3FooterNote">Option A Active</span>
+            <span id="m3Protein" class="font-semibold text-indigo-300">P: --g</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 7-DAY GROCERY SECTION INSIDE MEAL PLAN -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg card-box space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-cart-shopping text-brand-400"></i> Automated 7-Day Grocery Generator
+            </h3>
+            <p class="text-xs text-slate-400">Calculates exact weekly raw quantities based on your current dynamic portion sizing.</p>
+          </div>
+
+          <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 no-print">
+            <i class="fa-solid fa-print"></i> Print Grocery List
+          </button>
+        </div>
+
+        <div id="groceryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-400 leading-relaxed flex items-center gap-3">
+          <i class="fa-solid fa-lightbulb text-amber-400 text-xl shrink-0"></i>
+          <span>
+            <strong class="text-slate-200">AC Tech Prep Tip:</strong> Pre-batch cook your paneer or tofu curries 2 days in advance. Pack them in insulated food containers along with chilled water to maintain consistent energy during long field calls.
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="tabViewLogs" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- LOG FORM -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg card-box h-fit">
+          <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-brand-400"></i> Log Weekly Weight
+          </h3>
+
+          <form id="weightLogForm" onsubmit="handleWeightSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Date</label>
+              <input type="date" id="logDate" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500 transition" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Weight (kg)</label>
+              <input type="number" step="0.1" id="logWeight" placeholder="e.g. 109.5" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500 transition" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Notes <span class="text-slate-500">(Optional)</span></label>
+              <input type="text" id="logNotes" placeholder="e.g. Great energy on installation sites" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500 transition" />
+            </div>
+
+            <button type="submit" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-brand-600/20 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-plus"></i> Save Entry & Recalculate
+            </button>
+          </form>
+        </div>
+
+        <!-- PROGRESS CHART & HISTORY TABLE -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg card-box space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-bold text-white">Weight Trajectory to 99 kg Target</h3>
+                <p class="text-xs text-slate-400">Actual Logged Weight vs 1.0 kg/week Target Path</p>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">Progress Chart</span>
+            </div>
+
+            <div class="w-full h-64 sm:h-72 bg-slate-950/80 rounded-xl border border-slate-800/80 p-3 relative">
+              <canvas id="weightChart" class="w-full h-full"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg card-box">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-base font-bold text-white">Weight History Log</h3>
+              <button onclick="resetToDefaults()" class="text-xs text-red-400 hover:text-red-300 transition underline no-print">
+                Reset All Logs
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-semibold uppercase">
+                    <th class="py-2.5 px-3">Date</th>
+                    <th class="py-2.5 px-3">Weight</th>
+                    <th class="py-2.5 px-3">Change</th>
+                    <th class="py-2.5 px-3">Notes</th>
+                    <th class="py-2.5 px-3 text-right no-print">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="logTableBody" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 border border-brand-500 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <script>
+    const INITIAL_USER_DATA = {
+      profile: {
+        age: 34,
+        heightCm: 180,
+        startWeight: 111.0,
+        targetWeight: 99.0,
+        activityMultiplier: 1.48,
+        weeklyTargetKg: 1.0,
+        dinnerOption: 'A'
+      },
+      logs: [
+        { id: 1, date: '2026-10-05', weight: 111.0, notes: 'Starting baseline weight' }
+      ]
+    };
+
+    let appData = JSON.parse(localStorage.getItem('fitcraft_app_data')) || INITIAL_USER_DATA;
+
+    function saveData() {
+      localStorage.setItem('fitcraft_app_data', JSON.stringify(appData));
+    }
+
+    function showToast(msg, iconClass = 'fa-circle-check text-emerald-400') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      document.getElementById('toastIcon').className = `fa-solid ${iconClass}`;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+    }
+
+    // MAIN NAVIGATION TAB SWITCHER
+    function switchMainTab(tab) {
+      const mealsView = document.getElementById('tabViewMeals');
+      const logsView = document.getElementById('tabViewLogs');
+      const navMeals = document.getElementById('tabNavMeals');
+      const navLogs = document.getElementById('tabNavLogs');
+
+      if (tab === 'meals') {
+        mealsView.classList.remove('hidden');
+        logsView.classList.add('hidden');
+
+        navMeals.className = 'px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-2 bg-brand-600 text-white shadow-md';
+        navLogs.className = 'px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200';
+      } else {
+        mealsView.classList.add('hidden');
+        logsView.classList.remove('hidden');
+
+        navLogs.className = 'px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-2 bg-brand-600 text-white shadow-md';
+        navMeals.className = 'px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all flex items-center gap-2 text-slate-400 hover:text-slate-200';
+
+        renderChart();
+      }
+    }
+
+    function getCurrentWeight() {
+      if (!appData.logs || appData.logs.length === 0) return appData.profile.startWeight;
+      const sorted = [...appData.logs].sort((a, b) => new Date(b.date) - new Date(a.date));
+      return sorted[0].weight;
+    }
+
+    function calculateMetrics() {
+      const currentW = getCurrentWeight();
+      const { age, heightCm, activityMultiplier, weeklyTargetKg } = appData.profile;
+
+      const bmr = (10 * currentW) + (6.25 * heightCm) - (5 * age) + 5;
+      const tdee = bmr * activityMultiplier;
+
+      const dailyDeficit = weeklyTargetKg * 1100;
+      let calorieTarget = Math.round(tdee - dailyDeficit);
+      if (calorieTarget < 1700) calorieTarget = 1700;
+
+      const proteinGrams = Math.round(currentW * 1.8);
+      const proteinCalories = proteinGrams * 4;
+      const remainingCals = Math.max(0, calorieTarget - proteinCalories);
+      
+      const fatGrams = Math.round((remainingCals * 0.55) / 9);
+      const carbGrams = Math.round((remainingCals * 0.45) / 4);
+
+      return {
+        bmr: Math.round(bmr),
+        tdee: Math.round(tdee),
+        calorieTarget,
+        proteinGrams,
+        fatGrams,
+        carbGrams,
+        currentW
+      };
+    }
+
+    function computeMealIngredients() {
+      const currentW = getCurrentWeight();
+      const scaleFactor = currentW / 111.0;
+
+      const meal1 = {
+        oats: Math.round(60 * scaleFactor),
+        curd: Math.round(200 * scaleFactor),
+        pb: Math.round(30 * scaleFactor),
+        cals: Math.round(480 * scaleFactor),
+        protein: Math.round(28 * scaleFactor)
+      };
+
+      const meal2 = {
+        paneer: Math.round(220 * scaleFactor),
+        ghee: Math.round(15 * scaleFactor),
+        curd: Math.round(100 * scaleFactor),
+        cals: Math.round(720 * scaleFactor),
+        protein: Math.round(42 * scaleFactor)
+      };
+
+      const meal3A = {
+        tofu: Math.round(200 * scaleFactor),
+        hummus: Math.round(120 * scaleFactor),
+        ghee: Math.round(10 * scaleFactor),
+        cals: Math.round(620 * scaleFactor),
+        protein: Math.round(44 * scaleFactor)
+      };
+
+      const meal3B = {
+        tofu: Math.round(200 * scaleFactor),
+        chanaDaal: Math.round(75 * scaleFactor),
+        ghee: Math.round(12 * scaleFactor),
+        cals: Math.round(640 * scaleFactor),
+        protein: Math.round(52 * scaleFactor)
+      };
+
+      return { meal1, meal2, meal3A, meal3B };
+    }
+
+    function setDinnerOption(opt) {
+      appData.profile.dinnerOption = opt;
+      saveData();
+      renderDashboard();
+      showToast(`Switched to Dinner Option ${opt}`);
+    }
+
+    function renderDashboard() {
+      const metrics = calculateMetrics();
+      const portions = computeMealIngredients();
+      const currentW = metrics.currentW;
+      const totalLost = (appData.profile.startWeight - currentW).toFixed(1);
+      const remaining = (currentW - appData.profile.targetWeight).toFixed(1);
+
+      document.getElementById('statCurrentWeight').innerHTML = `${currentW.toFixed(1)} <span class="text-xs text-slate-500 font-normal">kg</span>`;
+      document.getElementById('metricCalTarget').innerText = metrics.calorieTarget;
+      document.getElementById('metricDeficitText').innerText = `1,100 kcal deficit from TDEE (${metrics.tdee} kcal)`;
+      
+      document.getElementById('metricProteinTarget').innerText = metrics.proteinGrams;
+      document.getElementById('metricFatTarget').innerText = metrics.fatGrams + 'g';
+      document.getElementById('metricCarbTarget').innerText = metrics.carbGrams + 'g';
+
+      document.getElementById('metricLost').innerText = Math.max(0, parseFloat(totalLost)).toFixed(1);
+      document.getElementById('metricRemaining').innerText = `${Math.max(0, parseFloat(remaining)).toFixed(1)} kg to 99.0 kg goal`;
+
+      // Meal 1
+      document.getElementById('m1Oats').innerText = portions.meal1.oats + ' g';
+      document.getElementById('m1Curd').innerText = portions.meal1.curd + ' g';
+      document.getElementById('m1PB').innerText = portions.meal1.pb + ' g';
+      document.getElementById('m1Cal').innerText = portions.meal1.cals + ' kcal';
+      document.getElementById('m1Protein').innerText = 'P: ' + portions.meal1.protein + 'g';
+
+      // Meal 2
+      document.getElementById('m2Paneer').innerText = portions.meal2.paneer + ' g';
+      document.getElementById('m2Ghee').innerText = portions.meal2.ghee + ' g';
+      document.getElementById('m2Curd').innerText = portions.meal2.curd + ' g';
+      document.getElementById('m2Cal').innerText = portions.meal2.cals + ' kcal';
+      document.getElementById('m2Protein').innerText = 'P: ' + portions.meal2.protein + 'g';
+
+      // Meal 3 Toggle
+      const btnA = document.getElementById('btnDinnerA');
+      const btnB = document.getElementById('btnDinnerB');
+      const m3Container = document.getElementById('m3IngredientsContainer');
+      const isA = appData.profile.dinnerOption === 'A';
+
+      if (isA) {
+        btnA.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-brand-600 text-white shadow-md';
+        btnB.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200';
+        
+        document.getElementById('m3Title').innerText = 'Dinner: Hummus & Tofu Bowl';
+        document.getElementById('m3Cal').innerText = portions.meal3A.cals + ' kcal';
+        document.getElementById('m3Protein').innerText = 'P: ' + portions.meal3A.protein + 'g';
+        document.getElementById('m3FooterNote').innerText = 'Option A: Hummus & Tofu Bowl';
+
+        m3Container.innerHTML = `
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Firm Tofu <span class="text-[10px] text-slate-500">(Raw Weigh)</span></span>
+            <span class="font-bold text-brand-400">${portions.meal3A.tofu} g</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Creamy Hummus</span>
+            <span class="font-bold text-brand-400">${portions.meal3A.hummus} g</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Ghee / Oil (For searing)</span>
+            <span class="font-bold text-brand-400">${portions.meal3A.ghee} g</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Mixed Greens / Salad</span>
+            <span class="font-semibold text-slate-400">150g raw greens</span>
+          </div>
+        `;
+      } else {
+        btnB.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-brand-600 text-white shadow-md';
+        btnA.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200';
+        
+        document.getElementById('m3Title').innerText = 'Dinner: Tofu & Chana Daal Curry';
+        document.getElementById('m3Cal').innerText = portions.meal3B.cals + ' kcal';
+        document.getElementById('m3Protein').innerText = 'P: ' + portions.meal3B.protein + 'g';
+        document.getElementById('m3FooterNote').innerText = 'Option B: Cooked Daal Curry';
+
+        m3Container.innerHTML = `
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Firm Tofu <span class="text-[10px] text-slate-500">(Cubed)</span></span>
+            <span class="font-bold text-brand-400">${portions.meal3B.tofu} g</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Chana Daal <span class="text-[10px] text-slate-500">(Raw Dry)</span></span>
+            <span class="font-bold text-brand-400">${portions.meal3B.chanaDaal} g</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Pure Ghee / Mustard Oil</span>
+            <span class="font-bold text-brand-400">${portions.meal3B.ghee} g</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+            <span class="text-slate-300 font-medium">Spinach, Ginger, Spices</span>
+            <span class="font-semibold text-slate-400">100g spinach/greens</span>
+          </div>
+        `;
+      }
+
+      renderLogsTable();
+      renderGroceryList(portions, isA);
+    }
+
+    function renderLogsTable() {
+      const tbody = document.getElementById('logTableBody');
+      tbody.innerHTML = '';
+
+      const sortedLogs = [...appData.logs].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      sortedLogs.forEach((log, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition';
+
+        let changeText = '-';
+        if (index < sortedLogs.length - 1) {
+          const prev = sortedLogs[index + 1].weight;
+          const diff = (log.weight - prev).toFixed(1);
+          if (diff < 0) {
+            changeText = `<span class="text-emerald-400 font-semibold">${diff} kg</span>`;
+          } else if (diff > 0) {
+            changeText = `<span class="text-rose-400 font-semibold">+${diff} kg</span>`;
+          } else {
+            changeText = `<span class="text-slate-400">0.0 kg</span>`;
+          }
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-3 font-medium text-slate-200">${log.date}</td>
+          <td class="py-3 px-3 font-bold text-brand-400">${log.weight.toFixed(1)} kg</td>
+          <td class="py-3 px-3 text-xs">${changeText}</td>
+          <td class="py-3 px-3 text-slate-400 text-xs truncate max-w-xs">${log.notes || '-'}</td>
+          <td class="py-3 px-3 text-right no-print">
+            <button onclick="deleteLogEntry(${log.id})" class="text-slate-500 hover:text-rose-400 transition p-1">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderGroceryList(portions, isOptionA) {
+      const grid = document.getElementById('groceryGrid');
+      
+      const weeklyOats = (portions.meal1.oats * 7) / 1000;
+      const weeklyCurd = ((portions.meal1.curd + portions.meal2.curd) * 7) / 1000;
+      const weeklyPB = (portions.meal1.pb * 7) / 1000;
+      const weeklyPaneer = (portions.meal2.paneer * 7) / 1000;
+      const weeklyTofu = ( (isOptionA ? portions.meal3A.tofu : portions.meal3B.tofu) * 7 ) / 1000;
+      const weeklyGhee = ((portions.meal2.ghee + (isOptionA ? portions.meal3A.ghee : portions.meal3B.ghee)) * 7) / 1000;
+
+      let dinnerSpecific = '';
+      if (isOptionA) {
+        const weeklyHummus = (portions.meal3A.hummus * 7) / 1000;
+        dinnerSpecific = `
+          <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+            <div>
+              <span class="font-bold text-slate-200 text-xs block">Creamy Hummus</span>
+              <span class="text-[10px] text-slate-500">Option A Dinner</span>
+            </div>
+            <span class="text-sm font-bold text-brand-400">${weeklyHummus.toFixed(2)} kg</span>
+          </div>
+        `;
+      } else {
+        const weeklyChanaDaal = (portions.meal3B.chanaDaal * 7) / 1000;
+        dinnerSpecific = `
+          <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+            <div>
+              <span class="font-bold text-slate-200 text-xs block">Chana Daal (Dry)</span>
+              <span class="text-[10px] text-slate-500">Option B Dinner</span>
+            </div>
+            <span class="text-sm font-bold text-brand-400">${weeklyChanaDaal.toFixed(2)} kg</span>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = `
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-200 text-xs block">Block Paneer</span>
+            <span class="text-[10px] text-slate-500">Lunch Bhurji</span>
+          </div>
+          <span class="text-sm font-bold text-brand-400">${weeklyPaneer.toFixed(2)} kg</span>
+        </div>
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-200 text-xs block">Firm Tofu</span>
+            <span class="text-[10px] text-slate-500">Dinner Base</span>
+          </div>
+          <span class="text-sm font-bold text-brand-400">${weeklyTofu.toFixed(2)} kg</span>
+        </div>
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-200 text-xs block">Full-Cream Curd / Dahi</span>
+            <span class="text-[10px] text-slate-500">Shake & Lunch Curry</span>
+          </div>
+          <span class="text-sm font-bold text-brand-400">${weeklyCurd.toFixed(2)} kg</span>
+        </div>
+
+        ${dinnerSpecific}
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-200 text-xs block">Rolled Oats</span>
+            <span class="text-[10px] text-slate-500">Breakfast Shake</span>
+          </div>
+          <span class="text-sm font-bold text-brand-400">${weeklyOats.toFixed(2)} kg</span>
+        </div>
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-200 text-xs block">Natural Peanut Butter</span>
+            <span class="text-[10px] text-slate-500">Breakfast Shake</span>
+          </div>
+          <span class="text-sm font-bold text-brand-400">${weeklyPB.toFixed(2)} kg</span>
+        </div>
+
+        <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-200 text-xs block">Pure Ghee / Mustard Oil</span>
+            <span class="text-[10px] text-slate-500">Cooking Fat</span>
+          </div>
+          <span class="text-sm font-bold text-brand-400">${weeklyGhee.toFixed(2)} kg</span>
+        </div>
+      `;
+    }
+
+    function renderChart() {
+      const canvas = document.getElementById('weightChart');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const sorted = [...appData.logs].sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (sorted.length === 0) return;
+
+      const padding = 40;
+      const graphW = w - padding * 2;
+      const graphH = h - padding * 2;
+
+      const minW = 95;
+      const maxW = 113;
+
+      ctx.strokeStyle = 'rgba(51, 65, 85, 0.4)';
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px Plus Jakarta Sans, sans-serif';
+
+      for (let weightVal = minW; weightVal <= maxW; weightVal += 3) {
+        const y = padding + graphH - ((weightVal - minW) / (maxW - minW)) * graphH;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(w - padding, y);
+        ctx.stroke();
+        ctx.fillText(`${weightVal}kg`, 5, y + 3);
+      }
+
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      
+      const startY = padding + graphH - ((111.0 - minW) / (maxW - minW)) * graphH;
+      const endY = padding + graphH - ((99.0 - minW) / (maxW - minW)) * graphH;
+      ctx.moveTo(padding, startY);
+      ctx.lineTo(w - padding, endY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (sorted.length > 0) {
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+
+        sorted.forEach((log, i) => {
+          const x = padding + (i / Math.max(1, sorted.length - 1)) * graphW;
+          const y = padding + graphH - ((log.weight - minW) / (maxW - minW)) * graphH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        sorted.forEach((log, i) => {
+          const x = padding + (i / Math.max(1, sorted.length - 1)) * graphW;
+          const y = padding + graphH - ((log.weight - minW) / (maxW - minW)) * graphH;
+
+          ctx.fillStyle = '#059669';
+          ctx.beginPath();
+          ctx.arc(x, y, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+      }
+    }
+
+    function handleWeightSubmit(e) {
+      e.preventDefault();
+      const dateVal = document.getElementById('logDate').value;
+      const weightVal = parseFloat(document.getElementById('logWeight').value);
+      const notesVal = document.getElementById('logNotes').value;
+
+      if (!dateVal || isNaN(weightVal)) return;
+
+      const newEntry = {
+        id: Date.now(),
+        date: dateVal,
+        weight: weightVal,
+        notes: notesVal
+      };
+
+      appData.logs.push(newEntry);
+      saveData();
+      renderDashboard();
+      
+      document.getElementById('logWeight').value = '';
+      document.getElementById('logNotes').value = '';
+      
+      showToast('New weight entry saved & portions recalculated!');
+    }
+
+    function deleteLogEntry(id) {
+      if (appData.logs.length <= 1) {
+        showToast('At least one baseline log is required.', 'fa-triangle-exclamation text-amber-400');
+        return;
+      }
+      appData.logs = appData.logs.filter(l => l.id !== id);
+      saveData();
+      renderDashboard();
+      showToast('Log entry removed.');
+    }
+
+    function resetToDefaults() {
+      appData = JSON.parse(JSON.stringify(INITIAL_USER_DATA));
+      saveData();
+      renderDashboard();
+      showToast('All logs reset to initial state.');
+    }
+
+    function exportJSONData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `fitcraft_data_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Data exported successfully!');
+    }
+
+    function importJSONData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.profile && Array.isArray(imported.logs)) {
+            appData = imported;
+            saveData();
+            renderDashboard();
+            showToast('Data imported & synced successfully!');
+          } else {
+            showToast('Invalid backup file structure.', 'fa-circle-xmark text-rose-400');
+          }
+        } catch (err) {
+          showToast('Error reading JSON file.', 'fa-circle-xmark text-rose-400');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    window.onload = function() {
+      document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+      renderDashboard();
+
+      window.addEventListener('resize', () => {
+        if (!document.getElementById('tabViewLogs').classList.contains('hidden')) {
+          renderChart();
+        }
+      });
+    };
+  </script>
+</body>
+</html>
