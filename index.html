@@ -1,784 +1,537 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adaptive Weight Loss Tracker & Meal Portion Calculator</title>
-  <!-- Tailwind CSS CDN -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Adaptive Weight Loss & Meal Plan</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            emerald: {
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              900: '#064e3b',
-            },
-            slate: {
-              800: '#1e293b',
-              900: '#0f172a',
-              950: '#020617',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      -webkit-tap-highlight-color: transparent;
     }
-    /* Custom Scrollbar for better dark mode aesthetic */
-    ::-webkit-scrollbar {
-      width: 8px;
+    .glass-card {
+      background: rgba(30, 41, 59, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
     }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(51, 65, 85, 0.8);
+      border-radius: 9999px;
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-12 antialiased">
+<body class="min-h-screen pb-20 custom-scrollbar">
 
-  <!-- Top Navigation Header -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md bg-opacity-80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div class="flex items-center space-x-3">
-        <div class="bg-emerald-500 p-2.5 rounded-xl shadow-lg shadow-emerald-500/20">
-          <svg class="w-6 h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
+  <!-- Mobile Top Header -->
+  <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-utensils text-base"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            Adaptive Meal & Weight Tracker
-            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Punjabi Chana Edition</span>
-          </h1>
-          <p class="text-xs text-slate-400">Precision Scaling based on Body Weight</p>
+          <h1 class="text-base font-extrabold text-white tracking-tight leading-tight">Adaptive Weight Loss</h1>
+          <p class="text-[11px] text-slate-400">12-Week Transformation Protocol</p>
         </div>
       </div>
-
-      <!-- Quick Action Controls -->
-      <div class="flex items-center space-x-2">
-        <button id="btnExport" onclick="exportData()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition border border-slate-700 flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          Export JSON
-        </button>
-        <label for="importFile" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition border border-slate-700 flex items-center gap-1.5 cursor-pointer">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-          Import JSON
-        </label>
-        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
-        <button onclick="resetToDefaults()" class="px-3 py-1.5 text-xs font-medium bg-red-950/40 hover:bg-red-900/60 text-red-300 rounded-lg transition border border-red-800/40">
-          Reset All
-        </button>
-      </div>
+      <button onclick="openGroceryModal()" class="px-3 py-1.5 bg-emerald-500/10 active:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Grocery</span>
+      </button>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <!-- Main Phone Container -->
+  <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
 
-    <!-- LEFT COLUMN: Profile Controls & Weight Progress (4 Cols) -->
-    <section class="lg:col-span-4 space-y-6">
-
-      <!-- Profile & Scaling Card -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-400 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-          Body Weight & Adaptive Scale
-        </h2>
-
-        <div class="grid grid-cols-2 gap-3 mb-4">
-          <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-            <span class="text-xs text-slate-500 block mb-1">Baseline Weight</span>
-            <div class="text-lg font-bold text-slate-300">111.0 <span class="text-xs text-slate-500">kg</span></div>
-          </div>
-          <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-            <label for="inputTargetWeight" class="text-xs text-slate-500 block mb-1">Target Weight</label>
-            <div class="flex items-center">
-              <input type="number" id="inputTargetWeight" step="0.5" value="85.0" class="w-full bg-transparent text-lg font-bold text-emerald-400 focus:outline-none" onchange="updateTargetWeight(this.value)">
-              <span class="text-xs text-slate-500 ml-1">kg</span>
-            </div>
+    <!-- KPI Metric Summary Bar -->
+    <div class="glass-card rounded-2xl p-4 border border-slate-800">
+      <div class="grid grid-cols-3 gap-2 text-center divide-x divide-slate-800">
+        <div>
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Current</span>
+          <span id="current-weight-display" class="text-lg font-black text-emerald-400">111.0 kg</span>
+        </div>
+        <div class="pl-1">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Target</span>
+          <div class="flex items-center justify-center">
+            <input type="number" id="target-weight-input" value="99.0" step="0.5" onchange="updateTargetWeight(this.value)" class="w-12 bg-transparent text-lg font-black text-teal-400 text-center focus:outline-none border-b border-teal-500/50">
+            <span class="text-teal-400 font-bold text-xs">kg</span>
           </div>
         </div>
-
-        <!-- Current Weight Input Form -->
-        <div class="space-y-3 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-          <label class="text-xs font-medium text-slate-300 block">Log New Weight Entry</label>
-          <div class="flex gap-2">
-            <input type="number" id="inputWeight" step="0.1" placeholder="e.g. 108.5" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-            <button onclick="logWeight()" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold px-4 py-2 rounded-lg text-sm transition">
-              Log
-            </button>
-          </div>
-        </div>
-
-        <!-- Scale Factor Indicator -->
-        <div class="mt-4 p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-xl flex items-center justify-between">
-          <div>
-            <div class="text-xs text-emerald-400 font-medium">Dynamic Meal Multiplier</div>
-            <div class="text-xs text-slate-400">Current / 111kg baseline ratio</div>
-          </div>
-          <div id="scaleFactorDisplay" class="text-xl font-extrabold text-emerald-400">1.000x</div>
+        <div class="pl-1">
+          <span class="block text-[10px] uppercase font-bold text-slate-400">Daily Target</span>
+          <span id="daily-calories-display" class="text-lg font-black text-white">1,715 kcal</span>
         </div>
       </div>
+    </div>
 
-      <!-- Weight History Table -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-400 flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Weight Logs
-          </h2>
-          <span id="logCount" class="text-xs text-slate-500">0 logs</span>
-        </div>
-        
-        <div class="max-h-60 overflow-y-auto pr-1 space-y-2" id="weightLogsContainer">
-          <!-- Populated by JS -->
-        </div>
-      </div>
+    <!-- TAB 1: MEAL PLAN -->
+    <div id="tab-meals" class="space-y-4">
 
-      <!-- Daily Summary Card -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-400 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-          Scaled Target Totals
-        </h2>
-
-        <div class="space-y-3">
-          <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span class="text-slate-400">Total Calories</span>
-              <span id="totalCalories" class="font-bold text-slate-200">0 / 0 kcal</span>
-            </div>
-            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div id="barCalories" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span class="text-slate-400">Total Protein</span>
-              <span id="totalProtein" class="font-bold text-slate-200">0 / 0 g</span>
-            </div>
-            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div id="barProtein" class="bg-teal-400 h-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- RIGHT COLUMN: Interactive Meal Options & Recipes (8 Cols) -->
-    <section class="lg:col-span-8 space-y-6">
-
-      <!-- Meal Plan Navigation Tabs -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 flex gap-2">
-        <button onclick="switchTab('meals')" id="tabBtnMeals" class="flex-1 py-2.5 rounded-xl font-semibold text-xs transition bg-emerald-500 text-slate-950 shadow-md">
-          Meal Options & Customizer
-        </button>
-        <button onclick="switchTab('grocery')" id="tabBtnGrocery" class="flex-1 py-2.5 rounded-xl font-semibold text-xs transition bg-transparent text-slate-400 hover:text-white">
-          7-Day Scaled Grocery List
-        </button>
-      </div>
-
-      <!-- TAB 1: MEAL OPTIONS & RECIPES -->
-      <div id="tabMeals" class="space-y-6">
-
-        <!-- MEAL 1: BREAKFAST -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Meal 1: Breakfast</span>
-            <span id="m1Macros" class="text-xs font-mono text-slate-400">~270 kcal | ~12g Protein</span>
-          </div>
-          <h3 class="text-base font-bold text-white mb-2">High-Protein Oats & Flaxseed Bowl</h3>
-          <p class="text-xs text-slate-400 mb-4">Quick energy release with high fiber and essential healthy fats for cognitive focus.</p>
-
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
-            <div class="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Scaled Raw Ingredients</div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-slate-300" id="m1Ingredients">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <details class="group">
-            <summary class="cursor-pointer text-xs font-semibold text-emerald-400 flex items-center justify-between bg-slate-800/40 p-2.5 rounded-lg border border-slate-800">
-              <span>View Quick Preparation Steps</span>
-              <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </summary>
-            <ol class="mt-3 text-xs text-slate-400 space-y-1.5 pl-4 list-decimal pr-2 leading-relaxed">
-              <li>Add the rolled oats and water (or unflavored protein mix) to a bowl.</li>
-              <li>Microwave on high for 90 seconds or boil on stovetop until creamy.</li>
-              <li>Stir in freshly ground flaxseeds and chia seeds after cooking to preserve healthy oils. Serve warm.</li>
-            </ol>
-          </details>
-        </div>
-
-        <!-- MEAL 2: LUNCH (DYNAMIC SELECTION) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Meal 2: Lunch</span>
-            <span id="m2Macros" class="text-xs font-mono text-slate-400">~569 kcal | ~31.8g Protein</span>
-          </div>
-          <h3 class="text-base font-bold text-white mb-3">Select Your Lunch Main Option</h3>
-
-          <!-- Option Selection Buttons -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
-            <button onclick="selectLunch('A')" id="btnLunchA" class="p-3 text-left rounded-xl border text-xs font-semibold transition border-emerald-500 bg-emerald-500/10 text-emerald-300">
-              <div class="font-bold">Option A</div>
-              <div class="text-[10px] text-slate-400 mt-1">Paneer Bhurji & Curd</div>
-            </button>
-            <button onclick="selectLunch('B')" id="btnLunchB" class="p-3 text-left rounded-xl border text-xs font-semibold transition border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700">
-              <div class="font-bold">Option B</div>
-              <div class="text-[10px] text-slate-400 mt-1">Soya Chunks Masala</div>
-            </button>
-            <button onclick="selectLunch('C')" id="btnLunchC" class="p-3 text-left rounded-xl border text-xs font-semibold transition border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700">
-              <div class="font-bold">Option C ⭐</div>
-              <div class="text-[10px] text-emerald-400 mt-1">Kala Chana Fry & Curd</div>
-            </button>
-          </div>
-
-          <!-- Ingredients Display -->
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
-            <div class="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Scaled Raw Ingredients</div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-slate-300" id="m2Ingredients">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Recipe Instructions -->
-          <details class="group" open>
-            <summary class="cursor-pointer text-xs font-semibold text-emerald-400 flex items-center justify-between bg-slate-800/40 p-2.5 rounded-lg border border-slate-800">
-              <span id="m2RecipeTitle">View Preparation Steps</span>
-              <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </summary>
-            <ol class="mt-3 text-xs text-slate-400 space-y-2 pl-4 list-decimal pr-2 leading-relaxed" id="m2RecipeSteps">
-              <!-- Populated by JS -->
-            </ol>
-          </details>
-        </div>
-
-        <!-- MEAL 3: DINNER (DYNAMIC SELECTION) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Meal 3: Dinner</span>
-            <span id="m3Macros" class="text-xs font-mono text-slate-400">~455 kcal | ~28.5g Protein</span>
-          </div>
-          <h3 class="text-base font-bold text-white mb-3">Select Your Dinner Main Option</h3>
-
-          <!-- Option Selection Buttons -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
-            <button onclick="selectDinner('A')" id="btnDinnerA" class="p-3 text-left rounded-xl border text-xs font-semibold transition border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700">
-              <div class="font-bold">Option A</div>
-              <div class="text-[10px] text-slate-400 mt-1">Tofu & Hummus Dip</div>
-            </button>
-            <button onclick="selectDinner('B')" id="btnDinnerB" class="p-3 text-left rounded-xl border text-xs font-semibold transition border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700">
-              <div class="font-bold">Option B</div>
-              <div class="text-[10px] text-slate-400 mt-1">Tofu Curry & Chana Daal</div>
-            </button>
-            <button onclick="selectDinner('C')" id="btnDinnerC" class="p-3 text-left rounded-xl border text-xs font-semibold transition border-emerald-500 bg-emerald-500/10 text-emerald-300">
-              <div class="font-bold">Option C ⭐</div>
-              <div class="text-[10px] text-emerald-400 mt-1">Punjabi Chole & Tofu</div>
-            </button>
-          </div>
-
-          <!-- Ingredients Display -->
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
-            <div class="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Scaled Raw Ingredients</div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-slate-300" id="m3Ingredients">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Recipe Instructions -->
-          <details class="group" open>
-            <summary class="cursor-pointer text-xs font-semibold text-emerald-400 flex items-center justify-between bg-slate-800/40 p-2.5 rounded-lg border border-slate-800">
-              <span id="m3RecipeTitle">View Preparation Steps</span>
-              <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </summary>
-            <ol class="mt-3 text-xs text-slate-400 space-y-2 pl-4 list-decimal pr-2 leading-relaxed" id="m3RecipeSteps">
-              <!-- Populated by JS -->
-            </ol>
-          </details>
-        </div>
-
-      </div>
-
-      <!-- TAB 2: GROCERY LIST (HIDDEN BY DEFAULT) -->
-      <div id="tabGrocery" class="hidden space-y-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+      <!-- MEAL 1 -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-4 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs">1</span>
             <div>
-              <h3 class="text-base font-bold text-white">7-Day Scaled Grocery Planner</h3>
-              <p class="text-xs text-slate-400">Quantities auto-calculate based on your selected Lunch/Dinner options & current scaled weight.</p>
+              <h2 class="text-sm font-bold text-white">Oats, Full-Fat Curd & PB Shake</h2>
+              <p class="text-[11px] text-slate-400">Breakfast • Quick Energy</p>
             </div>
-            <button onclick="copyGroceryList()" class="px-3 py-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-lg transition font-semibold">
-              Copy to Clipboard
-            </button>
+          </div>
+          <span class="px-2 py-1 rounded-md bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">533 kcal</span>
+        </div>
+
+        <div class="p-4 space-y-3">
+          <div class="space-y-1.5">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Exact Scaled Raw Ingredients:</span>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Rolled Oats (Dry)</span>
+              <span class="font-bold text-emerald-400" id="m1-ing-oats">40 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Full-Fat Curd (Dahi)</span>
+              <span class="font-bold text-emerald-400" id="m1-ing-curd">250 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Natural Peanut Butter</span>
+              <span class="font-bold text-emerald-400" id="m1-ing-pb">35 g</span>
+            </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="groceryListContainer">
-            <!-- Populated by JS -->
+          <div class="pt-2 border-t border-slate-800/60">
+            <span class="text-[10px] uppercase font-bold text-amber-400 block mb-1">Quick Steps:</span>
+            <ol class="text-xs text-slate-300 space-y-1 list-decimal list-inside">
+              <span>Blend dry Oats, Curd, Peanut Butter & 150ml water for 60 seconds. Drink fresh.</span>
+            </ol>
           </div>
         </div>
       </div>
 
-    </section>
+      <!-- MEAL 2: LUNCH (Interactive A/B/C Switcher) -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-4 bg-slate-900/90 border-b border-slate-800/80 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center font-bold text-xs">2</span>
+              <div>
+                <h2 class="text-sm font-bold text-white">Lunch Protocol</h2>
+                <p class="text-[11px] text-slate-400">Midday High Protein</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone A/B/C Option Switcher -->
+          <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-center">
+            <button id="lunch-a-btn" onclick="toggleLunchOption('A')" class="py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
+              Paneer
+            </button>
+            <button id="lunch-b-btn" onclick="toggleLunchOption('B')" class="py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
+              Soya
+            </button>
+            <button id="lunch-c-btn" onclick="toggleLunchOption('C')" class="py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
+              Kala Chana
+            </button>
+          </div>
+        </div>
+
+        <!-- Lunch Option A -->
+        <div id="lunch-option-a" class="p-4 space-y-3">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Option A Ingredients:</span>
+              <span class="font-bold text-emerald-400">569 kcal • 31.8g Protein</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Fresh Paneer (Raw)</span>
+              <span class="font-bold text-emerald-400" id="m2a-ing-paneer">150 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Full-Fat Curd</span>
+              <span class="font-bold text-emerald-400" id="m2a-ing-curd">150 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+              <span class="font-semibold text-amber-300">Pure Desi Ghee</span>
+              <span class="font-bold text-amber-400" id="m2a-ing-ghee">1 level tsp (5g)</span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-800/60 text-xs text-slate-300 space-y-1">
+            <span class="text-[10px] uppercase font-bold text-amber-400 block">Instructions:</span>
+            <p>Heat Ghee, sauté onion/tomato/spices, add crumbled Paneer, cook for 3 mins. Serve with chilled Curd.</p>
+          </div>
+        </div>
+
+        <!-- Lunch Option B -->
+        <div id="lunch-option-b" class="p-4 space-y-3 hidden">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Option B Ingredients:</span>
+              <span class="font-bold text-teal-400">568 kcal • 33.4g Protein</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Soya Chunks (Dry)</span>
+              <span class="font-bold text-emerald-400" id="m2b-ing-soya">50 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Full-Fat Curd</span>
+              <span class="font-bold text-emerald-400" id="m2b-ing-curd">200 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+              <span class="font-semibold text-amber-300">Pure Desi Ghee</span>
+              <span class="font-bold text-amber-400" id="m2b-ing-ghee">2 level tsp (10g)</span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-800/60 text-xs text-slate-300 space-y-1">
+            <span class="text-[10px] uppercase font-bold text-amber-400 block">Instructions:</span>
+            <p>Boil & squeeze Soya Chunks. Sauté in Ghee with masala & ginger-garlic. Toss 4 mins, squeeze lemon & serve with Curd.</p>
+          </div>
+        </div>
+
+        <!-- Lunch Option C (Kala Chana) -->
+        <div id="lunch-option-c" class="p-4 space-y-3 hidden">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Option C Ingredients:</span>
+              <span class="font-bold text-amber-400">525 kcal • 24.5g Protein</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Kala Chana (Raw/Dry)</span>
+              <span class="font-bold text-emerald-400" id="m2c-ing-chana">60 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Full-Fat Curd</span>
+              <span class="font-bold text-emerald-400" id="m2c-ing-curd">150 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+              <span class="font-semibold text-amber-300">Pure Desi Ghee</span>
+              <span class="font-bold text-amber-400" id="m2c-ing-ghee">1 level tsp (5g)</span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-800/60 text-xs text-slate-300 space-y-1">
+            <span class="text-[10px] uppercase font-bold text-amber-400 block">Instructions:</span>
+            <p>Soak & pressure cook Kala Chana. Prepare Ghee tadka with cumin & tomato masala. Simmer 5 mins & squeeze lemon.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEAL 3: DINNER (Interactive A/B Switcher) -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-4 bg-slate-900/90 border-b border-slate-800/80 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 border border-teal-500/30 flex items-center justify-center font-bold text-xs">3</span>
+              <div>
+                <h2 class="text-sm font-bold text-white">Dinner Protocol</h2>
+                <p class="text-[11px] text-slate-400">Evening Meal</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-center">
+            <button id="opt-a-btn" onclick="toggleDinnerOption('A')" class="py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
+              Hummus & Tofu
+            </button>
+            <button id="opt-b-btn" onclick="toggleDinnerOption('B')" class="py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
+              Tofu & Daal
+            </button>
+          </div>
+        </div>
+
+        <!-- Dinner Option A -->
+        <div id="dinner-option-a" class="p-4 space-y-3">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Option A Ingredients:</span>
+              <span class="font-bold text-emerald-400">446 kcal • 30.1g Protein</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Firm Tofu (Raw)</span>
+              <span class="font-bold text-emerald-400" id="m3a-ing-tofu">180 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Hummus Dip</span>
+              <span class="font-bold text-emerald-400" id="m3a-ing-hummus">50 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+              <span class="font-semibold text-amber-300">Pure Desi Ghee</span>
+              <span class="font-bold text-amber-400" id="m3a-ing-ghee">1 level tsp (5g)</span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-800/60 text-xs text-slate-300 space-y-1">
+            <span class="text-[10px] uppercase font-bold text-amber-400 block">Instructions:</span>
+            <p>Sauté Tofu in Ghee until golden. Serve with Hummus dip.</p>
+          </div>
+        </div>
+
+        <!-- Dinner Option B -->
+        <div id="dinner-option-b" class="p-4 space-y-3 hidden">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Option B Ingredients:</span>
+              <span class="font-bold text-teal-400">466 kcal • 39.5g Protein</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Firm Tofu (Raw Cubes)</span>
+              <span class="font-bold text-emerald-400" id="m3b-ing-tofu">200 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+              <span class="font-medium text-slate-200">Chana Daal (Dry)</span>
+              <span class="font-bold text-emerald-400" id="m3b-ing-daal">45 g</span>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+              <span class="font-semibold text-amber-300">Pure Desi Ghee</span>
+              <span class="font-bold text-amber-400" id="m3b-ing-ghee">1 level tsp (5g)</span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-800/60 text-xs text-slate-300 space-y-1">
+            <span class="text-[10px] uppercase font-bold text-amber-400 block">Instructions:</span>
+            <p>Boil Daal. Prepare Ghee tadka base, add Tofu & cooked Daal, simmer 5 mins.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: WEIGHT LOSS LOGS -->
+    <div id="tab-logs" class="space-y-4 hidden">
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle text-emerald-400"></i> Log Weekly Weigh-In
+        </h3>
+        <form id="weight-form" onsubmit="addWeightLog(event)" class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Date</label>
+            <input type="date" id="log-date" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (kg)</label>
+            <input type="number" id="log-weight" step="0.1" placeholder="e.g. 109.5" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition shadow-lg">Save & Recalculate Portions</button>
+        </form>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-3 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
+          <h3 class="text-xs font-bold text-white">Weigh-In History</h3>
+          <div class="flex gap-2 text-[10px]">
+            <button onclick="exportJSON()" class="text-slate-300 underline">Export</button>
+            <button onclick="importJSON()" class="text-slate-300 underline">Import</button>
+          </div>
+        </div>
+        <div class="divide-y divide-slate-800/60 text-xs" id="logs-list-container">
+          <!-- Dynamic mobile list rows -->
+        </div>
+      </div>
+    </div>
+
   </main>
 
+  <!-- Grocery List Modal -->
+  <div id="grocery-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-xs w-full rounded-2xl border border-slate-700 p-4 space-y-3 relative">
+      <button onclick="closeGroceryModal()" class="absolute top-3 right-3 text-slate-400 text-lg"><i class="fa-solid fa-times"></i></button>
+      <h3 class="text-sm font-bold text-white">7-Day Grocery List</h3>
+      <div class="space-y-1.5 border-t border-b border-slate-800 py-2 my-1 max-h-60 overflow-y-auto custom-scrollbar" id="grocery-items-container"></div>
+      <button onclick="closeGroceryModal()" class="w-full py-2 bg-slate-800 text-white font-semibold rounded-xl text-xs">Close</button>
+    </div>
+  </div>
+
+  <!-- Bottom Mobile Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-6 flex justify-around">
+    <button id="nav-meals-btn" onclick="switchTab('meals')" class="flex flex-col items-center text-emerald-400 font-bold">
+      <i class="fa-solid fa-utensils text-base mb-0.5"></i>
+      <span class="text-[10px]">Meal Plan</span>
+    </button>
+    <button id="nav-logs-btn" onclick="switchTab('logs')" class="flex flex-col items-center text-slate-400 font-bold">
+      <i class="fa-solid fa-chart-line text-base mb-0.5"></i>
+      <span class="text-[10px]">Weight Logs</span>
+    </button>
+  </nav>
+
   <script>
-    // --- APP STATE ---
-    const BASELINE_WEIGHT = 111.0;
-    
-    let appState = {
-      targetWeight: 85.0,
-      currentWeight: 111.0,
-      selectedLunch: 'C',  // Default to Punjabi Kala Chana
-      selectedDinner: 'C', // Default to Punjabi Chole & Tofu
-      weightLogs: [
-        { date: '2026-10-10', weight: 111.0, note: 'Baseline Entry' }
-      ]
-    };
+    const BASE_WEIGHT = 111.0;
+    const BASE_CALORIES = 1715;
+    let appData = { targetWeight: 99.0, activeLunchOption: 'A', activeDinnerOption: 'A', logs: [{ date: '2026-10-12', weight: 111.0 }] };
 
-    // --- BASE INGREDIENT DEFINITIONS (111kg Baseline) ---
-    const BASE_MEALS = {
-      breakfast: {
-        name: "Oats & Seeds Bowl",
-        calories: 270,
-        protein: 12.0,
-        ingredients: [
-          { name: "Rolled Oats", amount: 45, unit: "g" },
-          { name: "Flaxseeds (Ground)", amount: 10, unit: "g" },
-          { name: "Chia Seeds", amount: 5, unit: "g" }
-        ]
-      },
-      lunchOptions: {
-        A: {
-          name: "Paneer Bhurji with Full-Fat Curd",
-          calories: 569,
-          protein: 31.8,
-          ingredients: [
-            { name: "Paneer (Full-Fat)", amount: 120, unit: "g" },
-            { name: "Full-Fat Curd", amount: 150, unit: "g" },
-            { name: "Pure Desi Ghee", amount: 10, unit: "g (2 tsp)" }
-          ],
-          recipeTitle: "Paneer Bhurji & Curd Preparation",
-          steps: [
-            "Heat 2 level tsp (10g) Desi Ghee in a non-stick pan.",
-            "Sauté 1/2 chopped onion, ginger-garlic paste, and green chili until soft.",
-            "Add chopped tomato, turmeric, chili powder, and salt. Cook till oil releases.",
-            "Crumble 120g fresh Paneer into the pan and toss gently for 2-3 minutes.",
-            "Garnish with fresh coriander and serve alongside 150g chilled curd."
-          ]
-        },
-        B: {
-          name: "Soya Chunks Masala Fry with Full-Fat Curd",
-          calories: 568,
-          protein: 33.4,
-          ingredients: [
-            { name: "Soya Chunks (Dry)", amount: 50, unit: "g" },
-            { name: "Full-Fat Curd", amount: 150, unit: "g" },
-            { name: "Pure Desi Ghee", amount: 10, unit: "g (2 tsp)" }
-          ],
-          recipeTitle: "Soya Chunks Fry Preparation",
-          steps: [
-            "Boil 50g dry soya chunks in salted water for 8 mins; drain and squeeze out excess water.",
-            "Heat 2 level tsp (10g) Desi Ghee in a pan and add cumin seeds.",
-            "Sauté chopped onions, tomato puree, and garam masala until cooked.",
-            "Add squeezed soya chunks and sauté on medium heat for 5 minutes until crisp.",
-            "Serve hot alongside a 150g bowl of full-fat curd."
-          ]
-        },
-        C: {
-          name: "Punjabi Kala Chana (Black Chickpeas) Fry with Curd",
-          calories: 565,
-          protein: 28.0,
-          ingredients: [
-            { name: "Kala Chana (Dry)", amount: 65, unit: "g (~160g boiled)" },
-            { name: "Full-Fat Curd", amount: 150, unit: "g" },
-            { name: "Pure Desi Ghee", amount: 10, unit: "g (2 tsp)" }
-          ],
-          recipeTitle: "Punjabi Kala Chana Sukha Fry Recipe",
-          steps: [
-            "Soak 65g dry Kala Chana overnight; pressure cook for 5-6 whistles until soft.",
-            "Heat 2 level tsp (10g) Desi Ghee in a pan; add cumin seeds and slit green chilies.",
-            "Add 1/2 finely chopped onion and 1/2 pureed tomato with turmeric, red chili powder, coriander powder, and amchur (dry mango powder).",
-            "Toss in the boiled Kala Chana with 2 tbsp of reserved stalk water; stir till spices coat the chickpeas.",
-            "Squeeze fresh lemon juice, garnish with coriander, and serve with 150g fresh curd."
-          ]
-        }
-      },
-      dinnerOptions: {
-        A: {
-          name: "Firm Tofu & Hummus Dip in Ghee",
-          calories: 446,
-          protein: 30.1,
-          ingredients: [
-            { name: "Firm Tofu", amount: 180, unit: "g" },
-            { name: "Hummus Dip", amount: 50, unit: "g" },
-            { name: "Pure Desi Ghee", amount: 5, unit: "g (1 tsp)" }
-          ],
-          recipeTitle: "Pan-Seared Tofu & Hummus Steps",
-          steps: [
-            "Press 180g firm tofu with a paper towel and cut into thick cubes.",
-            "Heat 1 level tsp (5g) Ghee in a skillet over high heat.",
-            "Sear tofu cubes for 2-3 mins per side until golden crisp.",
-            "Season with chaat masala or black pepper and serve with 50g Hummus dip."
-          ]
-        },
-        B: {
-          name: "Tofu Curry & Chana Daal",
-          calories: 466,
-          protein: 39.5,
-          ingredients: [
-            { name: "Firm Tofu", amount: 200, unit: "g" },
-            { name: "Chana Daal (Dry)", amount: 45, unit: "g" },
-            { name: "Pure Desi Ghee", amount: 5, unit: "g (1 tsp)" }
-          ],
-          recipeTitle: "Tofu Curry & Chana Daal Steps",
-          steps: [
-            "Pressure cook 45g soaked Chana Daal with turmeric and salt until tender.",
-            "In 1 tsp (5g) Ghee, sauté garlic, onion, and tomato puree to form gravy.",
-            "Add 200g cubed firm tofu and cooked Chana Daal to the gravy; simmer for 5 mins.",
-            "Finish with kasuri methi and lemon juice."
-          ]
-        },
-        C: {
-          name: "Punjabi Chole (Kabuli Chana) & Paneer/Tofu Combo",
-          calories: 455,
-          protein: 28.5,
-          ingredients: [
-            { name: "Firm Tofu", amount: 120, unit: "g" },
-            { name: "Kabuli Chana (Dry)", amount: 40, unit: "g (~100g boiled)" },
-            { name: "Pure Desi Ghee", amount: 5, unit: "g (1 tsp)" }
-          ],
-          recipeTitle: "Authentic Punjabi Chole & Tofu Curry Recipe",
-          steps: [
-            "Soak 40g dry Kabuli Chana overnight and boil until tender (~100g cooked yield).",
-            "Heat 1 level tsp (5g) Desi Ghee; add cumin seeds, ginger paste, and finely chopped onion.",
-            "Add tomato puree, Punjabi Chole Masala, turmeric, chili powder, and salt. Cook until fragrant.",
-            "Add boiled chickpeas (mash a few for gravy thickness) and 120g cubed firm tofu with 100ml water.",
-            "Simmer for 6-8 mins. Squeeze fresh lemon juice and garnish with fresh coriander."
-          ]
-        }
-      }
-    };
-
-    // --- LOCAL STORAGE HANDLING ---
-    function loadSavedState() {
-      const saved = localStorage.getItem('adaptive_weight_tracker_data');
-      if (saved) {
-        try {
-          appState = JSON.parse(saved);
-        } catch(e) {
-          console.error("Failed to parse saved state", e);
-        }
-      }
+    function initData() {
+      const saved = localStorage.getItem('adaptive_weight_data');
+      if (saved) { try { appData = JSON.parse(saved); } catch (e) { console.error(e); } }
+      document.getElementById('log-date').valueAsDate = new Date();
+      renderAll();
     }
 
-    function saveState() {
-      localStorage.setItem('adaptive_weight_tracker_data', JSON.stringify(appState));
-      renderApp();
-    }
-
-    function resetToDefaults() {
-      if (confirm("Are you sure you want to reset all weight logs and custom options to default?")) {
-        localStorage.removeItem('adaptive_weight_tracker_data');
-        appState = {
-          targetWeight: 85.0,
-          currentWeight: 111.0,
-          selectedLunch: 'C',
-          selectedDinner: 'C',
-          weightLogs: [{ date: '2026-10-10', weight: 111.0, note: 'Baseline Entry' }]
-        };
-        renderApp();
-      }
-    }
-
-    // --- CALCULATION HELPERS ---
-    function getScaleFactor() {
-      if (!appState.currentWeight || appState.currentWeight <= 0) return 1.0;
-      return appState.currentWeight / BASELINE_WEIGHT;
-    }
-
-    // --- ACTION HANDLERS ---
-    function updateTargetWeight(val) {
-      const num = parseFloat(val);
-      if (num && num > 30) {
-        appState.targetWeight = num;
-        saveState();
-      }
-    }
-
-    function logWeight() {
-      const input = document.getElementById('inputWeight');
-      const val = parseFloat(input.value);
-      if (val && val > 30 && val < 300) {
-        appState.currentWeight = val;
-        const today = new Date().toISOString().split('T')[0];
-        appState.weightLogs.unshift({
-          date: today,
-          weight: val,
-          note: val < BASELINE_WEIGHT ? `-${(BASELINE_WEIGHT - val).toFixed(1)}kg drop` : 'Log entry'
-        });
-        input.value = '';
-        saveState();
-      } else {
-        alert("Please enter a valid weight in kg.");
-      }
-    }
-
-    function deleteLog(index) {
-      appState.weightLogs.splice(index, 1);
-      if (appState.weightLogs.length > 0) {
-        appState.currentWeight = appState.weightLogs[0].weight;
-      } else {
-        appState.currentWeight = BASELINE_WEIGHT;
-      }
-      saveState();
-    }
-
-    function selectLunch(optionKey) {
-      appState.selectedLunch = optionKey;
-      saveState();
-    }
-
-    function selectDinner(optionKey) {
-      appState.selectedDinner = optionKey;
-      saveState();
-    }
+    function saveData() { localStorage.setItem('adaptive_weight_data', JSON.stringify(appData)); }
 
     function switchTab(tab) {
-      const tabMeals = document.getElementById('tabMeals');
-      const tabGrocery = document.getElementById('tabGrocery');
-      const btnMeals = document.getElementById('tabBtnMeals');
-      const btnGrocery = document.getElementById('tabBtnGrocery');
+      const mealsTab = document.getElementById('tab-meals');
+      const logsTab = document.getElementById('tab-logs');
+      const mealsBtn = document.getElementById('nav-meals-btn');
+      const logsBtn = document.getElementById('nav-logs-btn');
 
       if (tab === 'meals') {
-        tabMeals.classList.remove('hidden');
-        tabGrocery.classList.add('hidden');
-        btnMeals.className = "flex-1 py-2.5 rounded-xl font-semibold text-xs transition bg-emerald-500 text-slate-950 shadow-md";
-        btnGrocery.className = "flex-1 py-2.5 rounded-xl font-semibold text-xs transition bg-transparent text-slate-400 hover:text-white";
+        mealsTab.classList.remove('hidden'); logsTab.classList.add('hidden');
+        mealsBtn.className = "flex flex-col items-center text-emerald-400 font-bold";
+        logsBtn.className = "flex flex-col items-center text-slate-400 font-bold";
       } else {
-        tabMeals.classList.add('hidden');
-        tabGrocery.classList.remove('hidden');
-        btnGrocery.className = "flex-1 py-2.5 rounded-xl font-semibold text-xs transition bg-emerald-500 text-slate-950 shadow-md";
-        btnMeals.className = "flex-1 py-2.5 rounded-xl font-semibold text-xs transition bg-transparent text-slate-400 hover:text-white";
+        mealsTab.classList.add('hidden'); logsTab.classList.remove('hidden');
+        logsBtn.className = "flex flex-col items-center text-emerald-400 font-bold";
+        mealsBtn.className = "flex flex-col items-center text-slate-400 font-bold";
       }
     }
 
-    // --- MAIN RENDER FUNCTION ---
-    function renderApp() {
-      const factor = getScaleFactor();
+    function getCurrentWeight() { return appData.logs.length ? appData.logs[appData.logs.length - 1].weight : BASE_WEIGHT; }
 
-      // Display Scale Factor
-      document.getElementById('scaleFactorDisplay').innerText = factor.toFixed(3) + 'x';
-      document.getElementById('inputTargetWeight').value = appState.targetWeight;
+    function calculateCaloriesForWeight(weight) {
+      const diff = weight - BASE_WEIGHT;
+      return Math.max(1400, Math.min(2400, Math.round(BASE_CALORIES + (diff * 13.5))));
+    }
 
-      // 1. Render Weight Logs
-      const logsContainer = document.getElementById('weightLogsContainer');
-      document.getElementById('logCount').innerText = `${appState.weightLogs.length} entries`;
-      logsContainer.innerHTML = appState.weightLogs.map((log, idx) => `
-        <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 text-xs">
-          <div>
-            <span class="font-bold text-slate-200">${log.weight.toFixed(1)} kg</span>
-            <span class="text-slate-500 text-[10px] ml-2">${log.date}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">${log.note || ''}</span>
-            <button onclick="deleteLog(${idx})" class="text-slate-600 hover:text-red-400 transition">&times;</button>
-          </div>
-        </div>
-      `).join('');
+    function updateTargetWeight(val) {
+      const num = parseFloat(val);
+      if (num && num > 50 && num < 200) { appData.targetWeight = num; saveData(); renderAll(); }
+    }
 
-      // 2. Render Meal 1 (Breakfast)
-      const m1 = BASE_MEALS.breakfast;
-      document.getElementById('m1Macros').innerText = `~${Math.round(m1.calories * factor)} kcal | ~${(m1.protein * factor).toFixed(1)}g Protein`;
-      document.getElementById('m1Ingredients').innerHTML = m1.ingredients.map(ing => `
-        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-          <div class="text-slate-400 text-[10px]">${ing.name}</div>
-          <div class="font-bold text-emerald-400 text-sm">${Math.round(ing.amount * factor)} ${ing.unit}</div>
-        </div>
-      `).join('');
+    function toggleLunchOption(opt) { appData.activeLunchOption = opt; saveData(); renderMeals(); }
+    function toggleDinnerOption(opt) { appData.activeDinnerOption = opt; saveData(); renderMeals(); }
 
-      // 3. Render Meal 2 (Lunch)
-      const currentLunch = BASE_MEALS.lunchOptions[appState.selectedLunch];
-      document.getElementById('m2Macros').innerText = `~${Math.round(currentLunch.calories * factor)} kcal | ~${(currentLunch.protein * factor).toFixed(1)}g Protein`;
-      document.getElementById('m2RecipeTitle').innerText = currentLunch.recipeTitle;
-      document.getElementById('m2RecipeSteps').innerHTML = currentLunch.steps.map(step => `<li>${step}</li>`).join('');
-      document.getElementById('m2Ingredients').innerHTML = currentLunch.ingredients.map(ing => `
-        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-          <div class="text-slate-400 text-[10px]">${ing.name}</div>
-          <div class="font-bold text-emerald-400 text-sm">${Math.round(ing.amount * factor)} ${ing.unit}</div>
-        </div>
-      `).join('');
+    function renderAll() {
+      const cw = getCurrentWeight();
+      document.getElementById('current-weight-display').innerText = `${cw.toFixed(1)} kg`;
+      document.getElementById('target-weight-input').value = appData.targetWeight.toFixed(1);
+      document.getElementById('daily-calories-display').innerText = `${calculateCaloriesForWeight(cw).toLocaleString()} kcal`;
+      renderMeals();
+      renderLogsTable();
+    }
 
-      // Highlight Active Lunch Button
-      ['A', 'B', 'C'].forEach(opt => {
-        const btn = document.getElementById(`btnLunch${opt}`);
-        if (opt === appState.selectedLunch) {
-          btn.className = "p-3 text-left rounded-xl border text-xs font-semibold transition border-emerald-500 bg-emerald-500/10 text-emerald-300 shadow-md";
-        } else {
-          btn.className = "p-3 text-left rounded-xl border text-xs font-semibold transition border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700";
-        }
-      });
+    function renderMeals() {
+      const scale = getCurrentWeight() / BASE_WEIGHT;
 
-      // 4. Render Meal 3 (Dinner)
-      const currentDinner = BASE_MEALS.dinnerOptions[appState.selectedDinner];
-      document.getElementById('m3Macros').innerText = `~${Math.round(currentDinner.calories * factor)} kcal | ~${(currentDinner.protein * factor).toFixed(1)}g Protein`;
-      document.getElementById('m3RecipeTitle').innerText = currentDinner.recipeTitle;
-      document.getElementById('m3RecipeSteps').innerHTML = currentDinner.steps.map(step => `<li>${step}</li>`).join('');
-      document.getElementById('m3Ingredients').innerHTML = currentDinner.ingredients.map(ing => `
-        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-          <div class="text-slate-400 text-[10px]">${ing.name}</div>
-          <div class="font-bold text-emerald-400 text-sm">${Math.round(ing.amount * factor)} ${ing.unit}</div>
-        </div>
-      `).join('');
+      // Meal 1
+      document.getElementById('m1-ing-oats').innerText = `${Math.round(40 * scale)} g`;
+      document.getElementById('m1-ing-curd').innerText = `${Math.round(250 * scale)} g`;
+      document.getElementById('m1-ing-pb').innerText = `${Math.round(35 * scale)} g`;
 
-      // Highlight Active Dinner Button
-      ['A', 'B', 'C'].forEach(opt => {
-        const btn = document.getElementById(`btnDinner${opt}`);
-        if (opt === appState.selectedDinner) {
-          btn.className = "p-3 text-left rounded-xl border text-xs font-semibold transition border-emerald-500 bg-emerald-500/10 text-emerald-300 shadow-md";
-        } else {
-          btn.className = "p-3 text-left rounded-xl border text-xs font-semibold transition border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700";
-        }
-      });
+      // Lunch Option A
+      document.getElementById('m2a-ing-paneer').innerText = `${Math.round(150 * scale)} g`;
+      document.getElementById('m2a-ing-curd').innerText = `${Math.round(150 * scale)} g`;
+      document.getElementById('m2a-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
 
-      // 5. Update Total Scaled Macros Bar
-      const totalCal = Math.round((m1.calories + currentLunch.calories + currentDinner.calories) * factor);
-      const totalProt = ((m1.protein + currentLunch.protein + currentDinner.protein) * factor).toFixed(1);
+      // Lunch Option B
+      document.getElementById('m2b-ing-soya').innerText = `${Math.round(50 * scale)} g`;
+      document.getElementById('m2b-ing-curd').innerText = `${Math.round(200 * scale)} g`;
+      document.getElementById('m2b-ing-ghee').innerText = `${(2 * scale).toFixed(1)} tsp (${Math.round(10 * scale)}g)`;
+
+      // Lunch Option C
+      document.getElementById('m2c-ing-chana').innerText = `${Math.round(60 * scale)} g`;
+      document.getElementById('m2c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
+      document.getElementById('m2c-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
+
+      // Lunch UI Switcher
+      const lunchA = document.getElementById('lunch-a-btn'), lunchB = document.getElementById('lunch-b-btn'), lunchC = document.getElementById('lunch-c-btn');
+      const divLA = document.getElementById('lunch-option-a'), divLB = document.getElementById('lunch-option-b'), divLC = document.getElementById('lunch-option-c');
       
-      const targetCal = Math.round(1294 * factor);
-      const targetProt = (72.3 * factor).toFixed(1);
+      const activeLunch = appData.activeLunchOption || 'A';
+      lunchA.className = activeLunch === 'A' ? "py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
+      lunchB.className = activeLunch === 'B' ? "py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
+      lunchC.className = activeLunch === 'C' ? "py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
 
-      document.getElementById('totalCalories').innerText = `${totalCal} / ${targetCal} kcal`;
-      document.getElementById('totalProtein').innerText = `${totalProt} / ${targetProt} g`;
+      divLA.classList.toggle('hidden', activeLunch !== 'A');
+      divLB.classList.toggle('hidden', activeLunch !== 'B');
+      divLC.classList.toggle('hidden', activeLunch !== 'C');
 
-      document.getElementById('barCalories').style.width = Math.min(100, (totalCal / targetCal) * 100) + '%';
-      document.getElementById('barProtein').style.width = Math.min(100, (totalProt / targetProt) * 100) + '%';
+      // Dinner Options
+      document.getElementById('m3a-ing-tofu').innerText = `${Math.round(180 * scale)} g`;
+      document.getElementById('m3a-ing-hummus').innerText = `${Math.round(50 * scale)} g`;
+      document.getElementById('m3a-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
 
-      // 6. Build 7-Day Grocery List
-      renderGroceryList(factor);
+      document.getElementById('m3b-ing-tofu').innerText = `${Math.round(200 * scale)} g`;
+      document.getElementById('m3b-ing-daal').innerText = `${Math.round(45 * scale)} g`;
+      document.getElementById('m3b-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
+
+      const optA = document.getElementById('opt-a-btn'), optB = document.getElementById('opt-b-btn'), divA = document.getElementById('dinner-option-a'), divB = document.getElementById('dinner-option-b');
+      const activeDinner = appData.activeDinnerOption || 'A';
+      optA.className = activeDinner === 'A' ? "py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
+      optB.className = activeDinner === 'B' ? "py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
+      divA.classList.toggle('hidden', activeDinner !== 'A');
+      divB.classList.toggle('hidden', activeDinner !== 'B');
     }
 
-    function renderGroceryList(factor) {
-      const groceryMap = {};
-
-      function addIng(name, qty, unit) {
-        if (!groceryMap[name]) {
-          groceryMap[name] = { amount: 0, unit: unit };
-        }
-        groceryMap[name].amount += qty * 7 * factor;
-      }
-
-      // Add Breakfast Ingredients
-      BASE_MEALS.breakfast.ingredients.forEach(i => addIng(i.name, i.amount, i.unit));
-
-      // Add Selected Lunch Ingredients
-      BASE_MEALS.lunchOptions[appState.selectedLunch].ingredients.forEach(i => addIng(i.name, i.amount, i.unit));
-
-      // Add Selected Dinner Ingredients
-      BASE_MEALS.dinnerOptions[appState.selectedDinner].ingredients.forEach(i => addIng(i.name, i.amount, i.unit));
-
-      const container = document.getElementById('groceryListContainer');
-      container.innerHTML = Object.keys(groceryMap).map(itemKey => {
-        const item = groceryMap[itemKey];
-        return `
-          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
-            <span class="text-xs text-slate-300 font-medium">${itemKey}</span>
-            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-              ${Math.round(item.amount)} ${item.unit.split(' ')[0]}
-            </span>
+    function renderLogsTable() {
+      const container = document.getElementById('logs-list-container');
+      container.innerHTML = '';
+      [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(log => {
+        const div = document.createElement('div');
+        div.className = "p-3 flex justify-between items-center";
+        div.innerHTML = `
+          <div>
+            <span class="font-bold text-white block">${log.date}</span>
+            <span class="text-[10px] text-slate-400">${calculateCaloriesForWeight(log.weight)} kcal target</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="font-extrabold text-emerald-400 text-sm">${log.weight.toFixed(1)} kg</span>
+            <button onclick="deleteLog('${log.date}')" class="text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
           </div>
         `;
-      }).join('');
-    }
-
-    function copyGroceryList() {
-      const factor = getScaleFactor();
-      let text = `🛒 7-DAY SCALED GROCERY LIST (${appState.currentWeight}kg Current Weight)\n------------------------------------\n`;
-      
-      const groceryMap = {};
-      function addIng(name, qty, unit) {
-        if (!groceryMap[name]) groceryMap[name] = { amount: 0, unit: unit };
-        groceryMap[name].amount += qty * 7 * factor;
-      }
-
-      BASE_MEALS.breakfast.ingredients.forEach(i => addIng(i.name, i.amount, i.unit));
-      BASE_MEALS.lunchOptions[appState.selectedLunch].ingredients.forEach(i => addIng(i.name, i.amount, i.unit));
-      BASE_MEALS.dinnerOptions[appState.selectedDinner].ingredients.forEach(i => addIng(i.name, i.amount, i.unit));
-
-      Object.keys(groceryMap).forEach(key => {
-        text += `• ${key}: ${Math.round(groceryMap[key].amount)} ${groceryMap[key].unit.split(' ')[0]}\n`;
-      });
-
-      text += `\nSelected Options: Lunch ${appState.selectedLunch}, Dinner ${appState.selectedDinner}`;
-
-      navigator.clipboard.writeText(text).then(() => {
-        alert("7-Day Grocery List copied to clipboard!");
-      }).catch(err => {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert("7-Day Grocery List copied to clipboard!");
+        container.appendChild(div);
       });
     }
 
-    function exportData() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `weight_tracker_data_${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
+    function addWeightLog(e) {
+      e.preventDefault();
+      const date = document.getElementById('log-date').value;
+      const weight = parseFloat(document.getElementById('log-weight').value);
+      if (!date || !weight) return;
+      const idx = appData.logs.findIndex(l => l.date === date);
+      if (idx >= 0) appData.logs[idx].weight = weight; else appData.logs.push({ date, weight });
+      appData.logs.sort((a,b) => new Date(a.date) - new Date(b.date));
+      saveData(); renderAll();
+      document.getElementById('log-weight').value = '';
     }
 
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    function deleteLog(date) {
+      if (appData.logs.length <= 1) { alert("Cannot delete baseline entry."); return; }
+      if (confirm(`Delete weigh-in for ${date}?`)) { appData.logs = appData.logs.filter(l => l.date !== date); saveData(); renderAll(); }
+    }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported && imported.weightLogs) {
-            appState = imported;
-            saveState();
-            alert("Data imported successfully!");
-          } else {
-            alert("Invalid backup JSON format.");
-          }
-        } catch(err) {
-          alert("Error parsing JSON file.");
-        }
+    function openGroceryModal() {
+      const modal = document.getElementById('grocery-modal'), container = document.getElementById('grocery-items-container'), r = getCurrentWeight() / BASE_WEIGHT;
+      const lunchOpt = appData.activeLunchOption || 'A';
+      const items = [
+        { name: "Rolled Oats (Dry)", amount: `${Math.round(40 * r * 7)} g` },
+        { name: "Full-Fat Curd", amount: `${((250 + (lunchOpt === 'B' ? 200 : 150) + 150) * r * 7 / 1000).toFixed(2)} kg` },
+        { name: "Pure Desi Ghee", amount: `${Math.round((lunchOpt === 'B' ? 15 : 10) * r * 7)} g` },
+        { name: "Peanut Butter", amount: `${Math.round(35 * r * 7)} g` },
+        { name: lunchOpt === 'A' ? "Fresh Paneer" : lunchOpt === 'B' ? "Soya Chunks" : "Kala Chana", amount: lunchOpt === 'A' ? `${(150 * r * 7 / 1000).toFixed(2)} kg` : `${Math.round((lunchOpt === 'B' ? 50 : 60) * r * 7)} g` },
+        { name: "Firm Tofu", amount: `${((appData.activeDinnerOption === 'A' ? 180 : 200) * r * 7 / 1000).toFixed(2)} kg` }
+      ];
+      container.innerHTML = items.map(i => `<div class="flex justify-between p-2 rounded bg-slate-900/60 text-xs"><span class="text-slate-200">${i.name}</span><span class="font-bold text-emerald-400">${i.amount}</span></div>`).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeGroceryModal() { document.getElementById('grocery-modal').classList.add('hidden'); }
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const a = document.createElement('a'); a.href = dataStr; a.download = 'weight_data.json'; document.body.appendChild(a); a.click(); a.remove();
+    }
+    function importJSON() {
+      const input = document.createElement('input'); input.type = 'file'; input.accept = 'application/json';
+      input.onchange = e => {
+        const reader = new FileReader();
+        reader.onload = ev => { try { appData = JSON.parse(ev.target.result); saveData(); renderAll(); alert("Restored!"); } catch(err) { alert("Invalid file"); } };
+        reader.readAsText(e.target.files[0]);
       };
-      reader.readAsText(file);
+      input.click();
     }
 
-    // --- INITIALIZATION ---
-    window.onload = function() {
-      loadSavedState();
-      renderApp();
-    };
+    window.onload = initData;
   </script>
 </body>
 </html>
