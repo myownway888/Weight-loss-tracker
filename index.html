@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <!-- NEW: Goal Target Date Projection Card -->
+    <!-- Goal Target Date Projection Card -->
     <div class="glass-card rounded-2xl p-4 md:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center space-x-3.5 w-full sm:w-auto">
         <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
@@ -405,13 +405,13 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option C Ingredients:</span>
-              <span class="font-bold text-amber-400">450 kcal total • 32.2g Protein</span>
+              <span class="font-bold text-amber-400">479 kcal total • 31.6g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
-              <span class="font-medium text-slate-200">White Chickpeas (Cooked)</span>
+              <span class="font-medium text-slate-200">White Chickpeas (Raw/Dry)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3c-ing-chole">160 g</span>
-                <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-chole">192 kcal</span>
+                <span class="font-bold text-emerald-400" id="m3c-ing-chole">60 g</span>
+                <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-chole">215 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
@@ -438,7 +438,7 @@
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
-            <p>Heat 1 tsp Ghee, sauté onions & Punjabi Chole masala. Add cooked White Chana and Tofu cubes, simmer for 6 mins. Squeeze lemon & serve with Curd.</p>
+            <p>Soak 60g dry chickpeas overnight & pressure cook until soft (~160g cooked yield). Heat 1 tsp Ghee, sauté onions & Punjabi Chole masala. Add cooked White Chana and Tofu cubes, simmer 6 mins. Squeeze lemon & serve with Curd.</p>
           </div>
         </div>
       </div>
@@ -567,11 +567,9 @@
         return;
       }
 
-      // Calculate weeks remaining based on 1.0 kg per week target pace
       const weeksRemaining = diffKg / 1.0;
       const daysRemaining = Math.round(weeksRemaining * 7);
 
-      // Latest weigh-in date or today's date
       const latestLogDateStr = appData.logs.length ? appData.logs[appData.logs.length - 1].date : new Date().toISOString().slice(0, 10);
       const baseDate = new Date(latestLogDateStr);
       
@@ -668,8 +666,8 @@
       document.getElementById('m3b-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
       document.getElementById('m3b-cal-ghee').innerText = `${Math.round(45 * scale)} kcal`;
 
-      document.getElementById('m3c-ing-chole').innerText = `${Math.round(160 * scale)} g`;
-      document.getElementById('m3c-cal-chole').innerText = `${Math.round(192 * scale)} kcal`;
+      document.getElementById('m3c-ing-chole').innerText = `${Math.round(60 * scale)} g`;
+      document.getElementById('m3c-cal-chole').innerText = `${Math.round(215 * scale)} kcal`;
 
       document.getElementById('m3c-ing-tofu').innerText = `${Math.round(100 * scale)} g`;
       document.getElementById('m3c-cal-tofu').innerText = `${Math.round(117 * scale)} kcal`;
@@ -741,7 +739,7 @@
         { name: "Pure Desi Ghee", amount: `${Math.round((lunchOpt === 'B' ? 15 : 10) * r * 7)} g` },
         { name: "Peanut Butter", amount: `${Math.round(35 * r * 7)} g` },
         { name: lunchOpt === 'A' ? "Fresh Paneer" : lunchOpt === 'B' ? "Soya Chunks" : "Kala Chana", amount: lunchOpt === 'A' ? `${(150 * r * 7 / 1000).toFixed(2)} kg` : `${Math.round((lunchOpt === 'B' ? 50 : 60) * r * 7)} g` },
-        { name: dinnerOpt === 'C' ? "White Chana + Tofu" : "Firm Tofu", amount: dinnerOpt === 'C' ? `${(160 * r * 7 / 1000).toFixed(2)} kg Chana / ${(100 * r * 7 / 1000).toFixed(2)} kg Tofu` : `${((dinnerOpt === 'A' ? 180 : 200) * r * 7 / 1000).toFixed(2)} kg` }
+        { name: dinnerOpt === 'C' ? "White Chana (Dry) + Tofu" : "Firm Tofu", amount: dinnerOpt === 'C' ? `${Math.round(60 * r * 7)} g Dry Chana / ${(100 * r * 7 / 1000).toFixed(2)} kg Tofu` : `${((dinnerOpt === 'A' ? 180 : 200) * r * 7 / 1000).toFixed(2)} kg` }
       ];
       container.innerHTML = items.map(i => `<div class="flex justify-between p-2 rounded bg-slate-900/60 text-xs"><span class="text-slate-200">${i.name}</span><span class="font-bold text-emerald-400">${i.amount}</span></div>`).join('');
       modal.classList.remove('hidden');
