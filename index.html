@@ -98,6 +98,33 @@
       </div>
     </div>
 
+    <!-- NEW: Goal Target Date Projection Card -->
+    <div class="glass-card rounded-2xl p-4 md:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3.5 w-full sm:w-auto">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
+          <i class="fa-solid fa-flag-checkered text-xl"></i>
+        </div>
+        <div>
+          <span class="text-[10px] md:text-xs uppercase font-bold tracking-wider text-emerald-400 block">Target Goal Projection</span>
+          <h3 class="text-base md:text-xl font-extrabold text-white flex items-center gap-2">
+            Target Hit Date: <span id="target-hit-date-display" class="text-emerald-400 underline decoration-emerald-500/50">Calculating...</span>
+          </h3>
+          <p class="text-[11px] md:text-xs text-slate-400" id="target-weeks-left-display">Based on steady 1.0 kg/week fat loss pace</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-800">
+        <div class="text-center px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700/60">
+          <span class="text-[10px] text-slate-400 block uppercase font-bold">Pace Target</span>
+          <span class="text-xs md:text-sm font-black text-amber-400">1.0 kg / wk</span>
+        </div>
+        <div class="text-center px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700/60">
+          <span class="text-[10px] text-slate-400 block uppercase font-bold">Remaining</span>
+          <span id="remaining-kg-display" class="text-xs md:text-sm font-black text-teal-400">12.0 kg</span>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB 1: MEAL PLAN -->
     <div id="tab-meals" class="space-y-4 md:space-y-6">
 
@@ -527,11 +554,44 @@
     function toggleLunchOption(opt) { appData.activeLunchOption = opt; saveData(); renderMeals(); }
     function toggleDinnerOption(opt) { appData.activeDinnerOption = opt; saveData(); renderMeals(); }
 
+    function updateGoalProjection() {
+      const currentWeight = getCurrentWeight();
+      const targetWeight = appData.targetWeight;
+      const diffKg = currentWeight - targetWeight;
+
+      document.getElementById('remaining-kg-display').innerText = `${diffKg > 0 ? diffKg.toFixed(1) : '0.0'} kg`;
+
+      if (diffKg <= 0) {
+        document.getElementById('target-hit-date-display').innerText = "Goal Achieved! 🎉";
+        document.getElementById('target-weeks-left-display').innerText = "Congratulations on reaching your weight target!";
+        return;
+      }
+
+      // Calculate weeks remaining based on 1.0 kg per week target pace
+      const weeksRemaining = diffKg / 1.0;
+      const daysRemaining = Math.round(weeksRemaining * 7);
+
+      // Latest weigh-in date or today's date
+      const latestLogDateStr = appData.logs.length ? appData.logs[appData.logs.length - 1].date : new Date().toISOString().slice(0, 10);
+      const baseDate = new Date(latestLogDateStr);
+      
+      const projectedDate = new Date(baseDate);
+      projectedDate.setDate(projectedDate.getDate() + daysRemaining);
+
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      const formattedDate = projectedDate.toLocaleDateString('en-US', options);
+
+      document.getElementById('target-hit-date-display').innerText = formattedDate;
+      document.getElementById('target-weeks-left-display').innerText = `Est. ${Math.ceil(weeksRemaining)} weeks remaining at steady 1.0 kg/week fat loss`;
+    }
+
     function renderAll() {
       const cw = getCurrentWeight();
       document.getElementById('current-weight-display').innerText = `${cw.toFixed(1)} kg`;
       document.getElementById('target-weight-input').value = appData.targetWeight.toFixed(1);
       document.getElementById('daily-calories-display').innerText = `${calculateCaloriesForWeight(cw).toLocaleString()} kcal`;
+      
+      updateGoalProjection();
       renderMeals();
       renderLogsTable();
     }
