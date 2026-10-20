@@ -138,7 +138,7 @@
               <p class="text-[11px] md:text-xs text-slate-400">Breakfast • Fast Satiety</p>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">533 kcal</span>
+          <span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60" id="m1-total-header">533 kcal</span>
         </div>
 
         <div class="p-4 md:p-5 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
@@ -204,7 +204,7 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option A Ingredients:</span>
-              <span class="font-bold text-emerald-400">569 kcal total • 31.8g Protein</span>
+              <span class="font-bold text-emerald-400" id="m2a-total-sum">569 kcal total • 31.8g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Fresh Paneer (Raw)</span>
@@ -227,6 +227,10 @@
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2a-cal-ghee">45 kcal</span>
               </div>
             </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs md:text-sm">
+              <span class="font-medium text-slate-400">Onion, Tomato & Spice Base</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2a-cal-veg">25 kcal</span>
+            </div>
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
@@ -239,7 +243,7 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option B Ingredients:</span>
-              <span class="font-bold text-teal-400">568 kcal total • 33.4g Protein</span>
+              <span class="font-bold text-teal-400" id="m2b-total-sum">524 kcal total • 33.4g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Soya Chunks (Dry)</span>
@@ -262,6 +266,10 @@
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2b-cal-ghee">90 kcal</span>
               </div>
             </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs md:text-sm">
+              <span class="font-medium text-slate-400">Onion, Tomato & Spice Base</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2b-cal-veg">25 kcal</span>
+            </div>
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
@@ -274,13 +282,13 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option C Ingredients:</span>
-              <span class="font-bold text-amber-400">525 kcal total • 24.5g Protein</span>
+              <span class="font-bold text-amber-400" id="m2c-total-sum">399 kcal total • 24.5g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Kala Chana (Raw/Dry)</span>
               <div class="flex items-center space-x-2">
                 <span class="font-bold text-emerald-400" id="m2c-ing-chana">60 g</span>
-                <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2c-cal-chana">220 kcal</span>
+                <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2c-cal-chana">227 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
@@ -296,6 +304,10 @@
                 <span class="font-bold text-amber-400" id="m2c-ing-ghee">1 level tsp (5g)</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2c-cal-ghee">45 kcal</span>
               </div>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs md:text-sm">
+              <span class="font-medium text-slate-400">Onion, Tomato & Spice Base</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2c-cal-veg">25 kcal</span>
             </div>
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
@@ -335,7 +347,7 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option A Ingredients:</span>
-              <span class="font-bold text-emerald-400">446 kcal total • 30.1g Protein</span>
+              <span class="font-bold text-emerald-400" id="m3a-total-sum">447 kcal total • 30.1g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Firm Tofu (Raw)</span>
@@ -358,6 +370,10 @@
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3a-cal-ghee">45 kcal</span>
               </div>
             </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs md:text-sm">
+              <span class="font-medium text-slate-400">Veggies & Seasoning</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3a-cal-veg">25 kcal</span>
+            </div>
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
@@ -370,7 +386,7 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option B Ingredients:</span>
-              <span class="font-bold text-teal-400">466 kcal total • 39.5g Protein</span>
+              <span class="font-bold text-teal-400" id="m3b-total-sum">466 kcal total • 39.5g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Firm Tofu (Raw Cubes)</span>
@@ -393,6 +409,10 @@
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3b-cal-ghee">45 kcal</span>
               </div>
             </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs md:text-sm">
+              <span class="font-medium text-slate-400">Curry Masala Base</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3b-cal-veg">25 kcal</span>
+            </div>
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
@@ -405,7 +425,7 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option C Ingredients:</span>
-              <span class="font-bold text-amber-400">479 kcal total • 31.6g Protein</span>
+              <span class="font-bold text-amber-400" id="m3c-total-sum">504 kcal total • 31.6g Protein</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">White Chickpeas (Raw/Dry)</span>
@@ -434,6 +454,10 @@
                 <span class="font-bold text-amber-400" id="m3c-ing-ghee">1 level tsp (5g)</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-ghee">45 kcal</span>
               </div>
+            </div>
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-xs md:text-sm">
+              <span class="font-medium text-slate-400">Punjabi Gravy Masala Base</span>
+              <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-veg">25 kcal</span>
             </div>
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
@@ -598,42 +622,58 @@
       const scale = getCurrentWeight() / BASE_WEIGHT;
 
       // Meal 1
+      const m1Oats = Math.round(150 * scale);
+      const m1Curd = Math.round(170 * scale);
+      const m1Pb = Math.round(213 * scale);
       document.getElementById('m1-ing-oats').innerText = `${Math.round(40 * scale)} g`;
-      document.getElementById('m1-cal-oats').innerText = `${Math.round(150 * scale)} kcal`;
-
+      document.getElementById('m1-cal-oats').innerText = `${m1Oats} kcal`;
       document.getElementById('m1-ing-curd').innerText = `${Math.round(250 * scale)} g`;
-      document.getElementById('m1-cal-curd').innerText = `${Math.round(170 * scale)} kcal`;
-
+      document.getElementById('m1-cal-curd').innerText = `${m1Curd} kcal`;
       document.getElementById('m1-ing-pb').innerText = `${Math.round(35 * scale)} g`;
-      document.getElementById('m1-cal-pb').innerText = `${Math.round(213 * scale)} kcal`;
+      document.getElementById('m1-cal-pb').innerText = `${m1Pb} kcal`;
+      document.getElementById('m1-total-header').innerText = `${m1Oats + m1Curd + m1Pb} kcal`;
 
-      // Lunch Options
+      // Lunch Option A
+      const m2aPan = Math.round(397 * scale);
+      const m2aCurd = Math.round(102 * scale);
+      const m2aGhee = Math.round(45 * scale);
+      const m2aVeg = Math.round(25 * scale);
       document.getElementById('m2a-ing-paneer').innerText = `${Math.round(150 * scale)} g`;
-      document.getElementById('m2a-cal-paneer').innerText = `${Math.round(397 * scale)} kcal`;
-
+      document.getElementById('m2a-cal-paneer').innerText = `${m2aPan} kcal`;
       document.getElementById('m2a-ing-curd').innerText = `${Math.round(150 * scale)} g`;
-      document.getElementById('m2a-cal-curd').innerText = `${Math.round(102 * scale)} kcal`;
-
+      document.getElementById('m2a-cal-curd').innerText = `${m2aCurd} kcal`;
       document.getElementById('m2a-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
-      document.getElementById('m2a-cal-ghee').innerText = `${Math.round(45 * scale)} kcal`;
+      document.getElementById('m2a-cal-ghee').innerText = `${m2aGhee} kcal`;
+      document.getElementById('m2a-cal-veg').innerText = `${m2aVeg} kcal`;
+      document.getElementById('m2a-total-sum').innerText = `${m2aPan + m2aCurd + m2aGhee + m2aVeg} kcal total • 31.8g Protein`;
 
+      // Lunch Option B
+      const m2bSoya = Math.round(173 * scale);
+      const m2bCurd = Math.round(136 * scale);
+      const m2bGhee = Math.round(90 * scale);
+      const m2bVeg = Math.round(25 * scale);
       document.getElementById('m2b-ing-soya').innerText = `${Math.round(50 * scale)} g`;
-      document.getElementById('m2b-cal-soya').innerText = `${Math.round(173 * scale)} kcal`;
-
+      document.getElementById('m2b-cal-soya').innerText = `${m2bSoya} kcal`;
       document.getElementById('m2b-ing-curd').innerText = `${Math.round(200 * scale)} g`;
-      document.getElementById('m2b-cal-curd').innerText = `${Math.round(136 * scale)} kcal`;
-
+      document.getElementById('m2b-cal-curd').innerText = `${m2bCurd} kcal`;
       document.getElementById('m2b-ing-ghee').innerText = `${(2 * scale).toFixed(1)} tsp (${Math.round(10 * scale)}g)`;
-      document.getElementById('m2b-cal-ghee').innerText = `${Math.round(90 * scale)} kcal`;
+      document.getElementById('m2b-cal-ghee').innerText = `${m2bGhee} kcal`;
+      document.getElementById('m2b-cal-veg').innerText = `${m2bVeg} kcal`;
+      document.getElementById('m2b-total-sum').innerText = `${m2bSoya + m2bCurd + m2bGhee + m2bVeg} kcal total • 33.4g Protein`;
 
+      // Lunch Option C (Kala Chana: 60g raw = 227 kcal)
+      const m2cChan = Math.round(227 * scale);
+      const m2cCurd = Math.round(102 * scale);
+      const m2cGhee = Math.round(45 * scale);
+      const m2cVeg = Math.round(25 * scale);
       document.getElementById('m2c-ing-chana').innerText = `${Math.round(60 * scale)} g`;
-      document.getElementById('m2c-cal-chana').innerText = `${Math.round(220 * scale)} kcal`;
-
+      document.getElementById('m2c-cal-chana').innerText = `${m2cChan} kcal`;
       document.getElementById('m2c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
-      document.getElementById('m2c-cal-curd').innerText = `${Math.round(102 * scale)} kcal`;
-
+      document.getElementById('m2c-cal-curd').innerText = `${m2cCurd} kcal`;
       document.getElementById('m2c-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
-      document.getElementById('m2c-cal-ghee').innerText = `${Math.round(45 * scale)} kcal`;
+      document.getElementById('m2c-cal-ghee').innerText = `${m2cGhee} kcal`;
+      document.getElementById('m2c-cal-veg').innerText = `${m2cVeg} kcal`;
+      document.getElementById('m2c-total-sum').innerText = `${m2cChan + m2cCurd + m2cGhee + m2cVeg} kcal total • 24.5g Protein`;
 
       const lunchA = document.getElementById('lunch-a-btn'), lunchB = document.getElementById('lunch-b-btn'), lunchC = document.getElementById('lunch-c-btn');
       const divLA = document.getElementById('lunch-option-a'), divLB = document.getElementById('lunch-option-b'), divLC = document.getElementById('lunch-option-c');
@@ -647,36 +687,50 @@
       divLB.classList.toggle('hidden', activeLunch !== 'B');
       divLC.classList.toggle('hidden', activeLunch !== 'C');
 
-      // Dinner Options
+      // Dinner Option A
+      const m3aTof = Math.round(211 * scale);
+      const m3aHum = Math.round(166 * scale);
+      const m3aGhe = Math.round(45 * scale);
+      const m3aVeg = Math.round(25 * scale);
       document.getElementById('m3a-ing-tofu').innerText = `${Math.round(180 * scale)} g`;
-      document.getElementById('m3a-cal-tofu').innerText = `${Math.round(211 * scale)} kcal`;
-
+      document.getElementById('m3a-cal-tofu').innerText = `${m3aTof} kcal`;
       document.getElementById('m3a-ing-hummus').innerText = `${Math.round(50 * scale)} g`;
-      document.getElementById('m3a-cal-hummus').innerText = `${Math.round(166 * scale)} kcal`;
-
+      document.getElementById('m3a-cal-hummus').innerText = `${m3aHum} kcal`;
       document.getElementById('m3a-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
-      document.getElementById('m3a-cal-ghee').innerText = `${Math.round(45 * scale)} kcal`;
+      document.getElementById('m3a-cal-ghee').innerText = `${m3aGhe} kcal`;
+      document.getElementById('m3a-cal-veg').innerText = `${m3aVeg} kcal`;
+      document.getElementById('m3a-total-sum').innerText = `${m3aTof + m3aHum + m3aGhe + m3aVeg} kcal total • 30.1g Protein`;
 
+      // Dinner Option B
+      const m3bTof = Math.round(234 * scale);
+      const m3bDaa = Math.round(162 * scale);
+      const m3bGhe = Math.round(45 * scale);
+      const m3bVeg = Math.round(25 * scale);
       document.getElementById('m3b-ing-tofu').innerText = `${Math.round(200 * scale)} g`;
-      document.getElementById('m3b-cal-tofu').innerText = `${Math.round(234 * scale)} kcal`;
-
+      document.getElementById('m3b-cal-tofu').innerText = `${m3bTof} kcal`;
       document.getElementById('m3b-ing-daal').innerText = `${Math.round(45 * scale)} g`;
-      document.getElementById('m3b-cal-daal').innerText = `${Math.round(162 * scale)} kcal`;
-
+      document.getElementById('m3b-cal-daal').innerText = `${m3bDaa} kcal`;
       document.getElementById('m3b-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
-      document.getElementById('m3b-cal-ghee').innerText = `${Math.round(45 * scale)} kcal`;
+      document.getElementById('m3b-cal-ghee').innerText = `${m3bGhe} kcal`;
+      document.getElementById('m3b-cal-veg').innerText = `${m3bVeg} kcal`;
+      document.getElementById('m3b-total-sum').innerText = `${m3bTof + m3bDaa + m3bGhe + m3bVeg} kcal total • 39.5g Protein`;
 
+      // Dinner Option C
+      const m3cCho = Math.round(215 * scale);
+      const m3cTof = Math.round(117 * scale);
+      const m3cCur = Math.round(102 * scale);
+      const m3cGhe = Math.round(45 * scale);
+      const m3cVeg = Math.round(25 * scale);
       document.getElementById('m3c-ing-chole').innerText = `${Math.round(60 * scale)} g`;
-      document.getElementById('m3c-cal-chole').innerText = `${Math.round(215 * scale)} kcal`;
-
+      document.getElementById('m3c-cal-chole').innerText = `${m3cCho} kcal`;
       document.getElementById('m3c-ing-tofu').innerText = `${Math.round(100 * scale)} g`;
-      document.getElementById('m3c-cal-tofu').innerText = `${Math.round(117 * scale)} kcal`;
-
+      document.getElementById('m3c-cal-tofu').innerText = `${m3cTof} kcal`;
       document.getElementById('m3c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
-      document.getElementById('m3c-cal-curd').innerText = `${Math.round(102 * scale)} kcal`;
-
+      document.getElementById('m3c-cal-curd').innerText = `${m3cCur} kcal`;
       document.getElementById('m3c-ing-ghee').innerText = `${(1 * scale).toFixed(1)} tsp (${Math.round(5 * scale)}g)`;
-      document.getElementById('m3c-cal-ghee').innerText = `${Math.round(45 * scale)} kcal`;
+      document.getElementById('m3c-cal-ghee').innerText = `${m3cGhe} kcal`;
+      document.getElementById('m3c-cal-veg').innerText = `${m3cVeg} kcal`;
+      document.getElementById('m3c-total-sum').innerText = `${m3cCho + m3cTof + m3cCur + m3cGhe + m3cVeg} kcal total • 31.6g Protein`;
 
       const optA = document.getElementById('opt-a-btn'), optB = document.getElementById('opt-b-btn'), optC = document.getElementById('opt-c-btn');
       const divDA = document.getElementById('dinner-option-a'), divDB = document.getElementById('dinner-option-b'), divDC = document.getElementById('dinner-option-c');
