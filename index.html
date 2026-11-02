@@ -199,7 +199,7 @@
             <button id="lunch-b-btn" onclick="toggleLunchOption('B')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
               Soya
             </button>
-            <button id="lunch-c-btn" onclick="toggleLunchOption('C')" class="toggle-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
+            <button id="lunch-c-btn" onclick="toggleLunchOption('C')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
               Kala Chana
             </button>
           </div>
@@ -675,7 +675,6 @@
 
       document.getElementById('header-subtitle').innerText = p.subtitle;
       
-      // Update theme classes dynamically
       document.querySelectorAll('.theme-text').forEach(el => {
         el.classList.remove('text-emerald-400', 'text-pink-400');
         el.classList.add(isPink ? 'text-pink-400' : 'text-emerald-400');
@@ -727,60 +726,60 @@
 
     function renderMeals() {
       const p = PROFILES[currentProfileKey];
-      // Ratio relative to profile base weight for Simran vs Manny portions
-      const scale = getCurrentWeight() / p.baseWeight;
-      const baseCalMult = p.baseCalories / 1930; // Scales overall meal calories relative to Manny's baseline
+      const weightRatio = getCurrentWeight() / p.baseWeight;
+      const calorieRatio = p.baseCalories / 1930; // Proportions gram amounts directly to Simran's lower calorie target
+      const combinedScale = weightRatio * calorieRatio;
 
       // Meal 1 (Breakfast)
-      const m1Oats = Math.round(206 * scale * baseCalMult);
-      const m1Curd = Math.round(170 * scale * baseCalMult);
-      const m1Pb = Math.round(244 * scale * baseCalMult);
-      document.getElementById('m1-ing-oats').innerText = `${Math.round(55 * scale)} g`;
+      const m1Oats = Math.round(206 * combinedScale);
+      const m1Curd = Math.round(170 * combinedScale);
+      const m1Pb = Math.round(244 * combinedScale);
+      document.getElementById('m1-ing-oats').innerText = `${Math.round(55 * combinedScale)} g`;
       document.getElementById('m1-cal-oats').innerText = `${m1Oats} kcal`;
-      document.getElementById('m1-ing-curd').innerText = `${Math.round(250 * scale)} g`;
+      document.getElementById('m1-ing-curd').innerText = `${Math.round(250 * combinedScale)} g`;
       document.getElementById('m1-cal-curd').innerText = `${m1Curd} kcal`;
-      document.getElementById('m1-ing-pb').innerText = `${Math.round(40 * scale)} g`;
+      document.getElementById('m1-ing-pb').innerText = `${Math.round(40 * combinedScale)} g`;
       document.getElementById('m1-cal-pb').innerText = `${m1Pb} kcal`;
       document.getElementById('m1-total-header').innerText = `${m1Oats + m1Curd + m1Pb} kcal`;
 
       // Lunch Option A
-      const m2aPan = Math.round(476 * scale * baseCalMult);
-      const m2aCurd = Math.round(102 * scale * baseCalMult);
-      const m2aGhee = Math.round(54 * scale * baseCalMult);
-      const m2aVeg = Math.round(28 * scale * baseCalMult);
-      document.getElementById('m2a-ing-paneer').innerText = `${Math.round(180 * scale)} g`;
+      const m2aPan = Math.round(476 * combinedScale);
+      const m2aCurd = Math.round(102 * combinedScale);
+      const m2aGhee = Math.round(54 * combinedScale);
+      const m2aVeg = Math.round(28 * combinedScale);
+      document.getElementById('m2a-ing-paneer').innerText = `${Math.round(180 * combinedScale)} g`;
       document.getElementById('m2a-cal-paneer').innerText = `${m2aPan} kcal`;
-      document.getElementById('m2a-ing-curd').innerText = `${Math.round(150 * scale)} g`;
+      document.getElementById('m2a-ing-curd').innerText = `${Math.round(150 * combinedScale)} g`;
       document.getElementById('m2a-cal-curd').innerText = `${m2aCurd} kcal`;
-      document.getElementById('m2a-ing-ghee').innerText = `${(1.2 * scale).toFixed(1)} tsp`;
+      document.getElementById('m2a-ing-ghee').innerText = `${(1.2 * combinedScale).toFixed(1)} tsp`;
       document.getElementById('m2a-cal-ghee').innerText = `${m2aGhee} kcal`;
       document.getElementById('m2a-cal-veg').innerText = `${m2aVeg} kcal`;
       document.getElementById('m2a-total-sum').innerText = `${m2aPan + m2aCurd + m2aGhee + m2aVeg} kcal total`;
 
       // Lunch Option B
-      const m2bSoya = Math.round(242 * scale * baseCalMult);
-      const m2bCurd = Math.round(136 * scale * baseCalMult);
-      const m2bGhee = Math.round(108 * scale * baseCalMult);
-      const m2bVeg = Math.round(74 * scale * baseCalMult);
-      document.getElementById('m2b-ing-soya').innerText = `${Math.round(70 * scale)} g`;
+      const m2bSoya = Math.round(242 * combinedScale);
+      const m2bCurd = Math.round(136 * combinedScale);
+      const m2bGhee = Math.round(108 * combinedScale);
+      const m2bVeg = Math.round(74 * combinedScale);
+      document.getElementById('m2b-ing-soya').innerText = `${Math.round(70 * combinedScale)} g`;
       document.getElementById('m2b-cal-soya').innerText = `${m2bSoya} kcal`;
-      document.getElementById('m2b-ing-curd').innerText = `${Math.round(200 * scale)} g`;
+      document.getElementById('m2b-ing-curd').innerText = `${Math.round(200 * combinedScale)} g`;
       document.getElementById('m2b-cal-curd').innerText = `${m2bCurd} kcal`;
-      document.getElementById('m2b-ing-ghee').innerText = `${(2.4 * scale).toFixed(1)} tsp`;
+      document.getElementById('m2b-ing-ghee').innerText = `${(2.4 * combinedScale).toFixed(1)} tsp`;
       document.getElementById('m2b-cal-ghee').innerText = `${m2bGhee} kcal`;
       document.getElementById('m2b-cal-veg').innerText = `${m2bVeg} kcal`;
       document.getElementById('m2b-total-sum').innerText = `${m2bSoya + m2bCurd + m2bGhee + m2bVeg} kcal total`;
 
       // Lunch Option C
-      const m2cChan = Math.round(378 * scale * baseCalMult);
-      const m2cCurd = Math.round(102 * scale * baseCalMult);
-      const m2cGhee = Math.round(108 * scale * baseCalMult);
-      const m2cVeg = Math.round(72 * scale * baseCalMult);
-      document.getElementById('m2c-ing-chana').innerText = `${Math.round(100 * scale)} g`;
+      const m2cChan = Math.round(378 * combinedScale);
+      const m2cCurd = Math.round(102 * combinedScale);
+      const m2cGhee = Math.round(108 * combinedScale);
+      const m2cVeg = Math.round(72 * combinedScale);
+      document.getElementById('m2c-ing-chana').innerText = `${Math.round(100 * combinedScale)} g`;
       document.getElementById('m2c-cal-chana').innerText = `${m2cChan} kcal`;
-      document.getElementById('m2c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
+      document.getElementById('m2c-ing-curd').innerText = `${Math.round(150 * combinedScale)} g`;
       document.getElementById('m2c-cal-curd').innerText = `${m2cCurd} kcal`;
-      document.getElementById('m2c-ing-ghee').innerText = `${(2.4 * scale).toFixed(1)} tsp`;
+      document.getElementById('m2c-ing-ghee').innerText = `${(2.4 * combinedScale).toFixed(1)} tsp`;
       document.getElementById('m2c-cal-ghee').innerText = `${m2cGhee} kcal`;
       document.getElementById('m2c-cal-veg').innerText = `${m2cVeg} kcal`;
       document.getElementById('m2c-total-sum').innerText = `${m2cChan + m2cCurd + m2cGhee + m2cVeg} kcal total`;
@@ -797,46 +796,46 @@
       });
 
       // Dinner Option A
-      const m3aTof = Math.round(281 * scale * baseCalMult);
-      const m3aHum = Math.round(240 * scale * baseCalMult);
-      const m3aGhe = Math.round(72 * scale * baseCalMult);
-      const m3aVeg = Math.round(57 * scale * baseCalMult);
-      document.getElementById('m3a-ing-tofu').innerText = `${Math.round(240 * scale)} g`;
+      const m3aTof = Math.round(281 * combinedScale);
+      const m3aHum = Math.round(240 * combinedScale);
+      const m3aGhe = Math.round(72 * combinedScale);
+      const m3aVeg = Math.round(57 * combinedScale);
+      document.getElementById('m3a-ing-tofu').innerText = `${Math.round(240 * combinedScale)} g`;
       document.getElementById('m3a-cal-tofu').innerText = `${m3aTof} kcal`;
-      document.getElementById('m3a-ing-hummus').innerText = `${Math.round(80 * scale)} g`;
+      document.getElementById('m3a-ing-hummus').innerText = `${Math.round(80 * combinedScale)} g`;
       document.getElementById('m3a-cal-hummus').innerText = `${m3aHum} kcal`;
-      document.getElementById('m3a-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp`;
+      document.getElementById('m3a-ing-ghee').innerText = `${(1.6 * combinedScale).toFixed(1)} tsp`;
       document.getElementById('m3a-cal-ghee').innerText = `${m3aGhe} kcal`;
       document.getElementById('m3a-cal-veg').innerText = `${m3aVeg} kcal`;
       document.getElementById('m3a-total-sum').innerText = `${m3aTof + m3aHum + m3aGhe + m3aVeg} kcal total`;
 
       // Dinner Option B
-      const m3bTof = Math.round(269 * scale * baseCalMult);
-      const m3bDaa = Math.round(252 * scale * baseCalMult);
-      const m3bGhe = Math.round(72 * scale * baseCalMult);
-      const m3bVeg = Math.round(57 * scale * baseCalMult);
-      document.getElementById('m3b-ing-tofu').innerText = `${Math.round(230 * scale)} g`;
+      const m3bTof = Math.round(269 * combinedScale);
+      const m3bDaa = Math.round(252 * combinedScale);
+      const m3bGhe = Math.round(72 * combinedScale);
+      const m3bVeg = Math.round(57 * combinedScale);
+      document.getElementById('m3b-ing-tofu').innerText = `${Math.round(230 * combinedScale)} g`;
       document.getElementById('m3b-cal-tofu').innerText = `${m3bTof} kcal`;
-      document.getElementById('m3b-ing-daal').innerText = `${Math.round(70 * scale)} g`;
+      document.getElementById('m3b-ing-daal').innerText = `${Math.round(70 * combinedScale)} g`;
       document.getElementById('m3b-cal-daal').innerText = `${m3bDaa} kcal`;
-      document.getElementById('m3b-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp`;
+      document.getElementById('m3b-ing-ghee').innerText = `${(1.6 * combinedScale).toFixed(1)} tsp`;
       document.getElementById('m3b-cal-ghee').innerText = `${m3bGhe} kcal`;
       document.getElementById('m3b-cal-veg').innerText = `${m3bVeg} kcal`;
       document.getElementById('m3b-total-sum').innerText = `${m3bTof + m3bDaa + m3bGhe + m3bVeg} kcal total`;
 
       // Dinner Option C
-      const m3cCho = Math.round(286 * scale * baseCalMult);
-      const m3cTof = Math.round(164 * scale * baseCalMult);
-      const m3cCur = Math.round(102 * scale * baseCalMult);
-      const m3cGhe = Math.round(72 * scale * baseCalMult);
-      const m3cVeg = Math.round(26 * scale * baseCalMult);
-      document.getElementById('m3c-ing-chole').innerText = `${Math.round(80 * scale)} g`;
+      const m3cCho = Math.round(286 * combinedScale);
+      const m3cTof = Math.round(164 * combinedScale);
+      const m3cCur = Math.round(102 * combinedScale);
+      const m3cGhe = Math.round(72 * combinedScale);
+      const m3cVeg = Math.round(26 * combinedScale);
+      document.getElementById('m3c-ing-chole').innerText = `${Math.round(80 * combinedScale)} g`;
       document.getElementById('m3c-cal-chole').innerText = `${m3cCho} kcal`;
-      document.getElementById('m3c-ing-tofu').innerText = `${Math.round(140 * scale)} g`;
+      document.getElementById('m3c-ing-tofu').innerText = `${Math.round(140 * combinedScale)} g`;
       document.getElementById('m3c-cal-tofu').innerText = `${m3cTof} kcal`;
-      document.getElementById('m3c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
+      document.getElementById('m3c-ing-curd').innerText = `${Math.round(150 * combinedScale)} g`;
       document.getElementById('m3c-cal-curd').innerText = `${m3cCur} kcal`;
-      document.getElementById('m3c-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp`;
+      document.getElementById('m3c-ing-ghee').innerText = `${(1.6 * combinedScale).toFixed(1)} tsp`;
       document.getElementById('m3c-cal-ghee').innerText = `${m3cGhe} kcal`;
       document.getElementById('m3c-cal-veg').innerText = `${m3cVeg} kcal`;
       document.getElementById('m3c-total-sum').innerText = `${m3cCho + m3cTof + m3cCur + m3cGhe + m3cVeg} kcal total`;
@@ -907,17 +906,17 @@
       const modal = document.getElementById('grocery-modal');
       const container = document.getElementById('grocery-items-container');
       const p = PROFILES[currentProfileKey];
-      const r = getCurrentWeight() / p.baseWeight;
+      const combinedScale = (getCurrentWeight() / p.baseWeight) * (p.baseCalories / 1930);
       const lunchOpt = appData[currentProfileKey].activeLunchOption || 'A';
       const dinnerOpt = appData[currentProfileKey].activeDinnerOption || 'A';
 
       const items = [
-        { name: "Rolled Oats (Dry)", amount: `${Math.round(55 * r * 7)} g` },
-        { name: "Full-Fat Curd", amount: `${((250 + (lunchOpt === 'B' ? 200 : 150) + (dinnerOpt === 'C' ? 150 : 0)) * r * 7 / 1000).toFixed(2)} kg` },
-        { name: "Pure Desi Ghee", amount: `${Math.round(((lunchOpt === 'B' || lunchOpt === 'C' ? 12 : 6) + 8) * r * 7)} g` },
-        { name: "Peanut Butter", amount: `${Math.round(40 * r * 7)} g` },
-        { name: lunchOpt === 'A' ? "Fresh Paneer" : lunchOpt === 'B' ? "Soya Chunks" : "Kala Chana", amount: lunchOpt === 'A' ? `${(180 * r * 7 / 1000).toFixed(2)} kg` : `${Math.round((lunchOpt === 'B' ? 70 : 100) * r * 7)} g` },
-        { name: dinnerOpt === 'C' ? "White Chana (Dry) + Tofu" : "Firm Tofu", amount: dinnerOpt === 'C' ? `${Math.round(80 * r * 7)} g Dry Chana / ${(140 * r * 7 / 1000).toFixed(2)} kg Tofu` : `${((dinnerOpt === 'A' ? 240 : 230) * r * 7 / 1000).toFixed(2)} kg` }
+        { name: "Rolled Oats (Dry)", amount: `${Math.round(55 * combinedScale * 7)} g` },
+        { name: "Full-Fat Curd", amount: `${((250 + (lunchOpt === 'B' ? 200 : 150) + (dinnerOpt === 'C' ? 150 : 0)) * combinedScale * 7 / 1000).toFixed(2)} kg` },
+        { name: "Pure Desi Ghee", amount: `${Math.round(((lunchOpt === 'B' || lunchOpt === 'C' ? 12 : 6) + 8) * combinedScale * 7)} g` },
+        { name: "Peanut Butter", amount: `${Math.round(40 * combinedScale * 7)} g` },
+        { name: lunchOpt === 'A' ? "Fresh Paneer" : lunchOpt === 'B' ? "Soya Chunks" : "Kala Chana", amount: lunchOpt === 'A' ? `${(180 * combinedScale * 7 / 1000).toFixed(2)} kg` : `${Math.round((lunchOpt === 'B' ? 70 : 100) * combinedScale * 7)} g` },
+        { name: dinnerOpt === 'C' ? "White Chana (Dry) + Tofu" : "Firm Tofu", amount: dinnerOpt === 'C' ? `${Math.round(80 * combinedScale * 7)} g Dry Chana / ${(140 * combinedScale * 7 / 1000).toFixed(2)} kg Tofu` : `${((dinnerOpt === 'A' ? 240 : 230) * combinedScale * 7 / 1000).toFixed(2)} kg` }
       ];
       container.innerHTML = items.map(i => `<div class="flex justify-between p-2 rounded bg-slate-900/60 text-xs"><span class="text-slate-200">${i.name}</span><span class="font-bold ${p.theme === 'pink' ? 'text-pink-400' : 'text-emerald-400'}">${i.amount}</span></div>`).join('');
       modal.classList.remove('hidden');
