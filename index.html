@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adaptive Weight Loss & Meal Plan</title>
+  <title>Adaptive Fuel & Weight Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -31,42 +31,48 @@
     }
   </style>
 </head>
-<body class="min-h-screen pb-24 md:pb-12 custom-scrollbar">
+<body id="body-root" class="min-h-screen pb-24 md:pb-12 custom-scrollbar">
 
-  <!-- Header / PC Navigation -->
+  <!-- Header & Profile Switcher Bar -->
   <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 md:px-8 py-3">
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-          <i class="fa-solid fa-utensils text-lg"></i>
-        </div>
-        <div>
-          <h1 class="text-base md:text-xl font-extrabold text-white tracking-tight leading-tight">Adaptive Fuel & Weight Tracker</h1>
-          <p class="text-[11px] md:text-xs text-slate-400">High-Protein Active Workday Protocol • PC & Mobile Responsive</p>
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
+        <div class="flex items-center space-x-3">
+          <div id="header-icon-box" class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <i class="fa-solid fa-utensils text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-base md:text-xl font-extrabold text-white tracking-tight leading-tight">Adaptive Fuel & Weight Tracker</h1>
+            <p id="header-subtitle" class="text-[11px] md:text-xs text-slate-400">Multi-User High-Protein Protocol</p>
+          </div>
         </div>
       </div>
 
-      <!-- PC Top Navigation Tabs -->
+      <!-- Profile Selector Tabs -->
+      <div class="flex bg-slate-800/90 p-1 rounded-xl border border-slate-700/60 w-full sm:w-auto justify-center">
+        <button id="profile-manny-btn" onclick="switchProfile('manny')" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
+          Manny (111kg)
+        </button>
+        <button id="profile-simran-btn" onclick="switchProfile('simran')" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">
+          Simrandeep (75kg)
+        </button>
+      </div>
+
+      <!-- PC Top Navigation Tabs & Grocery -->
       <div class="hidden md:flex items-center space-x-3">
         <div class="flex bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
-          <button id="pc-tab-meals-btn" onclick="switchTab('meals')" class="px-5 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
+          <button id="pc-tab-meals-btn" onclick="switchTab('meals')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
             Meal Plan
           </button>
-          <button id="pc-tab-logs-btn" onclick="switchTab('logs')" class="px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">
+          <button id="pc-tab-logs-btn" onclick="switchTab('logs')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">
             Weight Logs
           </button>
         </div>
-        <button onclick="openGroceryModal()" class="px-3.5 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5">
+        <button id="grocery-btn-pc" onclick="openGroceryModal()" class="px-3.5 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5">
           <i class="fa-solid fa-cart-shopping"></i>
           <span>7-Day Grocery</span>
         </button>
       </div>
-
-      <!-- Mobile Grocery Button -->
-      <button onclick="openGroceryModal()" class="md:hidden px-3 py-1.5 bg-emerald-500/10 active:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5">
-        <i class="fa-solid fa-cart-shopping"></i>
-        <span>Grocery</span>
-      </button>
     </div>
   </header>
 
@@ -92,31 +98,31 @@
           <span id="daily-calories-display" class="text-base md:text-2xl font-black text-white">1,930 kcal</span>
         </div>
         <div class="hidden md:block pl-1">
-          <span class="block text-xs uppercase font-bold text-slate-400">Daily Protein</span>
-          <span class="text-2xl font-black text-emerald-400">115+ g</span>
+          <span class="block text-xs uppercase font-bold text-slate-400">Active Pace</span>
+          <span id="pace-display" class="text-2xl font-black text-emerald-400">1.0 kg/wk</span>
         </div>
       </div>
     </div>
 
     <!-- Goal Target Date Projection Card -->
-    <div class="glass-card rounded-2xl p-4 md:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div id="projection-card" class="glass-card rounded-2xl p-4 md:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center space-x-3.5 w-full sm:w-auto">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
+        <div id="projection-icon" class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
           <i class="fa-solid fa-flag-checkered text-xl"></i>
         </div>
         <div>
-          <span class="text-[10px] md:text-xs uppercase font-bold tracking-wider text-emerald-400 block">Target Goal Projection</span>
+          <span id="projection-label" class="text-[10px] md:text-xs uppercase font-bold tracking-wider text-emerald-400 block">Target Goal Projection</span>
           <h3 class="text-base md:text-xl font-extrabold text-white flex items-center gap-2">
             Target Hit Date: <span id="target-hit-date-display" class="text-emerald-400 underline decoration-emerald-500/50">Calculating...</span>
           </h3>
-          <p class="text-[11px] md:text-xs text-slate-400" id="target-weeks-left-display">Based on steady 1.0 kg/week fat loss pace</p>
+          <p class="text-[11px] md:text-xs text-slate-400" id="target-weeks-left-display">Based on steady fat loss pace</p>
         </div>
       </div>
 
       <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-800">
         <div class="text-center px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700/60">
           <span class="text-[10px] text-slate-400 block uppercase font-bold">Pace Target</span>
-          <span class="text-xs md:text-sm font-black text-amber-400">1.0 kg / wk</span>
+          <span id="pace-card-val" class="text-xs md:text-sm font-black text-amber-400">1.0 kg / wk</span>
         </div>
         <div class="text-center px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700/60">
           <span class="text-[10px] text-slate-400 block uppercase font-bold">Remaining</span>
@@ -135,7 +141,7 @@
             <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs md:text-sm">1</span>
             <div>
               <h2 class="text-sm md:text-base font-bold text-white">Oats, Full-Fat Curd & PB Shake</h2>
-              <p class="text-[11px] md:text-xs text-slate-400">Breakfast • Active Workday Energy</p>
+              <p class="text-[11px] md:text-xs text-slate-400">Breakfast • High Satiety Protocol</p>
             </div>
           </div>
           <span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60" id="m1-total-header">620 kcal</span>
@@ -147,21 +153,21 @@
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Rolled Oats (Dry)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m1-ing-oats">55 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m1-ing-oats">55 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m1-cal-oats">206 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Full-Fat Curd (Dahi)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m1-ing-curd">250 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m1-ing-curd">250 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m1-cal-curd">170 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Natural Peanut Butter</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m1-ing-pb">40 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m1-ing-pb">40 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m1-cal-pb">244 kcal</span>
               </div>
             </div>
@@ -169,7 +175,7 @@
 
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Preparation:</span>
-            <p>Add dry oats, full-fat curd, peanut butter, and 200ml chilled water into a blender. Blend high for 60 seconds until creamy and drink before heading to work.</p>
+            <p>Add dry oats, full-fat curd, peanut butter, and 200ml chilled water into a blender. Blend high for 60 seconds until creamy and serve immediately.</p>
           </div>
         </div>
       </div>
@@ -187,13 +193,13 @@
 
           <!-- Lunch Option A/B/C Buttons -->
           <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-center w-full sm:w-auto">
-            <button id="lunch-a-btn" onclick="toggleLunchOption('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
+            <button id="lunch-a-btn" onclick="toggleLunchOption('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow theme-btn">
               Paneer
             </button>
             <button id="lunch-b-btn" onclick="toggleLunchOption('B')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
               Soya
             </button>
-            <button id="lunch-c-btn" onclick="toggleLunchOption('C')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
+            <button id="lunch-c-btn" onclick="toggleLunchOption('C')" class="toggle-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
               Kala Chana
             </button>
           </div>
@@ -204,19 +210,19 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option A Ingredients:</span>
-              <span class="font-bold text-emerald-400" id="m2a-total-sum">660 kcal total • 38.1g Protein</span>
+              <span class="font-bold text-emerald-400 theme-text" id="m2a-total-sum">660 kcal total</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Fresh Paneer (Raw)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m2a-ing-paneer">180 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m2a-ing-paneer">180 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2a-cal-paneer">476 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Full-Fat Curd</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m2a-ing-curd">150 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m2a-ing-curd">150 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2a-cal-curd">102 kcal</span>
               </div>
             </div>
@@ -243,19 +249,19 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option B Ingredients:</span>
-              <span class="font-bold text-teal-400" id="m2b-total-sum">660 kcal total • 43.8g Protein</span>
+              <span class="font-bold text-teal-400" id="m2b-total-sum">660 kcal total</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Soya Chunks (Dry)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m2b-ing-soya">70 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m2b-ing-soya">70 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2b-cal-soya">242 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Full-Fat Curd</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m2b-ing-curd">200 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m2b-ing-curd">200 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2b-cal-curd">136 kcal</span>
               </div>
             </div>
@@ -273,7 +279,7 @@
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
-            <p>Boil 70g Soya Chunks for 5 mins, drain, and squeeze excess water. Sauté in Ghee with ginger-garlic and spices for 4 minutes. Squeeze lemon juice & serve with Curd.</p>
+            <p>Boil Soya Chunks for 5 mins, drain, and squeeze excess water. Sauté in Ghee with ginger-garlic and spices for 4 minutes. Squeeze lemon juice & serve with Curd.</p>
           </div>
         </div>
 
@@ -282,19 +288,19 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option C Ingredients:</span>
-              <span class="font-bold text-amber-400" id="m2c-total-sum">660 kcal total • 32.1g Protein</span>
+              <span class="font-bold text-amber-400" id="m2c-total-sum">660 kcal total</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Kala Chana (Raw/Dry)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m2c-ing-chana">100 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m2c-ing-chana">100 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2c-cal-chana">378 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Full-Fat Curd</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m2c-ing-curd">150 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m2c-ing-curd">150 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m2c-cal-curd">102 kcal</span>
               </div>
             </div>
@@ -312,7 +318,7 @@
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
-            <p>Soak 100g dry Kala Chana overnight & pressure cook soft (~260g cooked yield). Prepare Ghee tadka with cumin, tomatoes, and garam masala. Toss cooked chana 5 mins & finish with lemon juice.</p>
+            <p>Soak Kala Chana overnight & pressure cook soft. Prepare Ghee tadka with cumin, tomatoes, and garam masala. Toss cooked chana 5 mins & finish with lemon juice.</p>
           </div>
         </div>
       </div>
@@ -330,7 +336,7 @@
 
           <!-- Dinner Option A/B/C Switcher Buttons -->
           <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-center w-full sm:w-auto">
-            <button id="opt-a-btn" onclick="toggleDinnerOption('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow">
+            <button id="opt-a-btn" onclick="toggleDinnerOption('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow theme-btn">
               Hummus & Tofu
             </button>
             <button id="opt-b-btn" onclick="toggleDinnerOption('B')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400">
@@ -347,19 +353,19 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option A Ingredients:</span>
-              <span class="font-bold text-emerald-400" id="m3a-total-sum">650 kcal total • 39.2g Protein</span>
+              <span class="font-bold text-emerald-400 theme-text" id="m3a-total-sum">650 kcal total</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Firm Tofu (Raw)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3a-ing-tofu">240 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3a-ing-tofu">240 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3a-cal-tofu">281 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Hummus Dip</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3a-ing-hummus">80 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3a-ing-hummus">80 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3a-cal-hummus">240 kcal</span>
               </div>
             </div>
@@ -377,7 +383,7 @@
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
-            <p>Cube 240g Firm Tofu and stir-fry in Ghee with capsicum and spices until golden brown. Serve warm with weighed Hummus dip.</p>
+            <p>Cube Tofu and stir-fry in Ghee with capsicum and spices until golden brown. Serve warm with weighed Hummus dip.</p>
           </div>
         </div>
 
@@ -386,19 +392,19 @@
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option B Ingredients:</span>
-              <span class="font-bold text-teal-400" id="m3b-total-sum">650 kcal total • 47.1g Protein</span>
+              <span class="font-bold text-teal-400" id="m3b-total-sum">650 kcal total</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Firm Tofu (Raw Cubes)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3b-ing-tofu">230 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3b-ing-tofu">230 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3b-cal-tofu">269 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Chana Daal (Dry)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3b-ing-daal">70 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3b-ing-daal">70 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3b-cal-daal">252 kcal</span>
               </div>
             </div>
@@ -416,39 +422,39 @@
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
-            <p>Boil 70g Chana Daal until soft. Prepare tomato masala curry in Ghee, add Tofu and cooked Daal, simmer for 5 mins.</p>
+            <p>Boil Chana Daal until soft. Prepare tomato masala curry in Ghee, add Tofu and cooked Daal, simmer for 5 mins.</p>
           </div>
         </div>
 
-        <!-- Dinner Option C (Punjabi White Chana Chole + Tofu) -->
+        <!-- Dinner Option C -->
         <div id="dinner-option-c" class="p-4 md:p-5 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 hidden">
           <div class="md:col-span-5 space-y-2">
             <div class="flex justify-between text-xs mb-1">
               <span class="text-[10px] uppercase font-bold text-slate-400">Option C Ingredients:</span>
-              <span class="font-bold text-amber-400" id="m3c-total-sum">650 kcal total • 41.2g Protein</span>
+              <span class="font-bold text-amber-400" id="m3c-total-sum">650 kcal total</span>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">White Chickpeas (Raw/Dry)</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3c-ing-chole">80 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3c-ing-chole">80 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-chole">286 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Firm Tofu Cubes</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3c-ing-tofu">140 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3c-ing-tofu">140 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-tofu">164 kcal</span>
               </div>
             </div>
             <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs md:text-sm">
               <span class="font-medium text-slate-200">Full-Fat Curd</span>
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-emerald-400" id="m3c-ing-curd">150 g</span>
+                <span class="font-bold text-emerald-400 theme-text" id="m3c-ing-curd">150 g</span>
                 <span class="text-[10px] text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded" id="m3c-cal-curd">102 kcal</span>
               </div>
             </div>
-            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber500/10 border border-amber-500/30 text-xs md:text-sm">
+            <div class="flex justify-between items-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs md:text-sm">
               <span class="font-semibold text-amber-300">Pure Desi Ghee</span>
               <div class="flex items-center space-x-2">
                 <span class="font-bold text-amber-400" id="m3c-ing-ghee">1.6 tsp (8g)</span>
@@ -462,7 +468,7 @@
           </div>
           <div class="md:col-span-7 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800/60 text-xs md:text-sm text-slate-300 space-y-1.5 flex flex-col justify-center">
             <span class="text-[10px] md:text-xs uppercase font-bold text-amber-400 block">Instructions:</span>
-            <p>Soak 80g dry chickpeas overnight & pressure cook soft (~210g cooked yield). Heat Ghee, sauté onions & Punjabi Chole masala. Add cooked White Chana and Tofu cubes, simmer 6 mins. Squeeze lemon & serve with Curd.</p>
+            <p>Soak chickpeas overnight & pressure cook soft. Heat Ghee, sauté onions & masala. Add cooked White Chana and Tofu cubes, simmer 6 mins. Serve with Curd.</p>
           </div>
         </div>
       </div>
@@ -473,7 +479,7 @@
     <div id="tab-logs" class="space-y-4 md:space-y-6 hidden">
       <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 space-y-3">
         <h3 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-plus-circle text-emerald-400"></i> Log Weekly Weigh-In
+          <i class="fa-solid fa-plus-circle text-emerald-400 theme-text"></i> Log Weekly Weigh-In
         </h3>
         <form id="weight-form" onsubmit="addWeightLog(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
           <div>
@@ -482,9 +488,9 @@
           </div>
           <div>
             <label class="block text-[11px] md:text-xs font-semibold text-slate-300 mb-1">Weight (kg)</label>
-            <input type="number" id="log-weight" step="0.1" placeholder="e.g. 109.5" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-emerald-500">
+            <input type="number" id="log-weight" step="0.1" placeholder="e.g. 74.0" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-emerald-500">
           </div>
-          <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs md:text-sm transition shadow-lg">Save & Recalculate</button>
+          <button type="submit" id="log-save-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs md:text-sm transition shadow-lg theme-bg">Save & Recalculate</button>
         </form>
       </div>
 
@@ -516,7 +522,7 @@
 
   <!-- Bottom Navigation Bar (Mobile Only) -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 py-2 px-6 flex justify-around">
-    <button id="nav-meals-btn" onclick="switchTab('meals')" class="flex flex-col items-center text-emerald-400 font-bold">
+    <button id="nav-meals-btn" onclick="switchTab('meals')" class="flex flex-col items-center text-emerald-400 font-bold theme-text">
       <i class="fa-solid fa-utensils text-base mb-0.5"></i>
       <span class="text-[10px]">Meal Plan</span>
     </button>
@@ -527,18 +533,52 @@
   </nav>
 
   <script>
-    const BASE_WEIGHT = 111.0;
-    const BASE_CALORIES = 1930;
-    let appData = { targetWeight: 99.0, activeLunchOption: 'A', activeDinnerOption: 'A', logs: [{ date: '2026-10-12', weight: 111.0 }] };
+    const PROFILES = {
+      manny: {
+        name: "Manraj Singh",
+        theme: "emerald",
+        baseWeight: 111.0,
+        defaultTarget: 99.0,
+        baseCalories: 1930,
+        paceKg: 1.0,
+        subtitle: "High-Protein Active Workday Protocol",
+        logs: [{ date: '2026-10-12', weight: 111.0 }]
+      },
+      simran: {
+        name: "Simrandeep Kaur",
+        theme: "pink",
+        baseWeight: 75.0,
+        defaultTarget: 60.0,
+        baseCalories: 1420,
+        paceKg: 0.9,
+        subtitle: "Below Moderate Activity • 800g–1kg/wk Fat Loss",
+        logs: [{ date: '2026-10-12', weight: 75.0 }]
+      }
+    };
+
+    let currentProfileKey = 'manny';
+    let appData = {
+      manny: { targetWeight: 99.0, activeLunchOption: 'A', activeDinnerOption: 'A', logs: [{ date: '2026-10-12', weight: 111.0 }] },
+      simran: { targetWeight: 60.0, activeLunchOption: 'A', activeDinnerOption: 'A', logs: [{ date: '2026-10-12', weight: 75.0 }] }
+    };
 
     function initData() {
-      const saved = localStorage.getItem('adaptive_weight_data');
-      if (saved) { try { appData = JSON.parse(saved); } catch (e) { console.error(e); } }
+      const saved = localStorage.getItem('multi_user_adaptive_weight_data');
+      if (saved) {
+        try { appData = JSON.parse(saved); } catch(e) { console.error(e); }
+      }
       document.getElementById('log-date').valueAsDate = new Date();
       renderAll();
     }
 
-    function saveData() { localStorage.setItem('adaptive_weight_data', JSON.stringify(appData)); }
+    function saveData() {
+      localStorage.setItem('multi_user_adaptive_weight_data', JSON.stringify(appData));
+    }
+
+    function switchProfile(key) {
+      currentProfileKey = key;
+      renderAll();
+    }
 
     function switchTab(tab) {
       const mealsTab = document.getElementById('tab-meals');
@@ -547,70 +587,137 @@
       const mobileLogsBtn = document.getElementById('nav-logs-btn');
       const pcMealsBtn = document.getElementById('pc-tab-meals-btn');
       const pcLogsBtn = document.getElementById('pc-tab-logs-btn');
+      const themeColor = PROFILES[currentProfileKey].theme === 'pink' ? 'text-pink-400' : 'text-emerald-400';
+      const themeBg = PROFILES[currentProfileKey].theme === 'pink' ? 'bg-pink-500 text-slate-950' : 'bg-emerald-500 text-slate-950';
 
       if (tab === 'meals') {
         mealsTab.classList.remove('hidden'); logsTab.classList.add('hidden');
-        if (mobileMealsBtn) mobileMealsBtn.className = "flex flex-col items-center text-emerald-400 font-bold";
+        if (mobileMealsBtn) mobileMealsBtn.className = `flex flex-col items-center ${themeColor} font-bold`;
         if (mobileLogsBtn) mobileLogsBtn.className = "flex flex-col items-center text-slate-400 font-bold";
-        if (pcMealsBtn) pcMealsBtn.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow";
-        if (pcLogsBtn) pcLogsBtn.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
+        if (pcMealsBtn) pcMealsBtn.className = `px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${themeBg} shadow`;
+        if (pcLogsBtn) pcLogsBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
       } else {
         mealsTab.classList.add('hidden'); logsTab.classList.remove('hidden');
-        if (mobileLogsBtn) mobileLogsBtn.className = "flex flex-col items-center text-emerald-400 font-bold";
+        if (mobileLogsBtn) mobileLogsBtn.className = `flex flex-col items-center ${themeColor} font-bold`;
         if (mobileMealsBtn) mobileMealsBtn.className = "flex flex-col items-center text-slate-400 font-bold";
-        if (pcLogsBtn) pcLogsBtn.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow";
-        if (pcMealsBtn) pcMealsBtn.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
+        if (pcLogsBtn) pcLogsBtn.className = `px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${themeBg} shadow`;
+        if (pcMealsBtn) pcMealsBtn.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
       }
     }
 
-    function getCurrentWeight() { return appData.logs.length ? appData.logs[appData.logs.length - 1].weight : BASE_WEIGHT; }
+    function getCurrentProfileLogs() { return appData[currentProfileKey].logs; }
+    function getCurrentWeight() {
+      const logs = getCurrentProfileLogs();
+      return logs.length ? logs[logs.length - 1].weight : PROFILES[currentProfileKey].baseWeight;
+    }
 
     function calculateCaloriesForWeight(weight) {
-      const diff = weight - BASE_WEIGHT;
-      return Math.max(1500, Math.min(2600, Math.round(BASE_CALORIES + (diff * 14.0))));
+      const p = PROFILES[currentProfileKey];
+      const diff = weight - p.baseWeight;
+      const stepFactor = p.theme === 'pink' ? 11.0 : 14.0;
+      return Math.max(p.theme === 'pink' ? 1100 : 1500, Math.round(p.baseCalories + (diff * stepFactor)));
     }
 
     function updateTargetWeight(val) {
       const num = parseFloat(val);
-      if (num && num > 50 && num < 200) { appData.targetWeight = num; saveData(); renderAll(); }
+      if (num && num > 30 && num < 200) {
+        appData[currentProfileKey].targetWeight = num;
+        saveData();
+        renderAll();
+      }
     }
 
-    function toggleLunchOption(opt) { appData.activeLunchOption = opt; saveData(); renderMeals(); }
-    function toggleDinnerOption(opt) { appData.activeDinnerOption = opt; saveData(); renderMeals(); }
+    function toggleLunchOption(opt) { appData[currentProfileKey].activeLunchOption = opt; saveData(); renderMeals(); }
+    function toggleDinnerOption(opt) { appData[currentProfileKey].activeDinnerOption = opt; saveData(); renderMeals(); }
 
     function updateGoalProjection() {
+      const p = PROFILES[currentProfileKey];
       const currentWeight = getCurrentWeight();
-      const targetWeight = appData.targetWeight;
+      const targetWeight = appData[currentProfileKey].targetWeight;
       const diffKg = currentWeight - targetWeight;
 
       document.getElementById('remaining-kg-display').innerText = `${diffKg > 0 ? diffKg.toFixed(1) : '0.0'} kg`;
 
       if (diffKg <= 0) {
         document.getElementById('target-hit-date-display').innerText = "Goal Achieved! 🎉";
-        document.getElementById('target-weeks-left-display').innerText = "Congratulations on reaching your weight target!";
+        document.getElementById('target-weeks-left-display').innerText = "Congratulations on reaching your target!";
         return;
       }
 
-      const weeksRemaining = diffKg / 1.0;
+      const weeksRemaining = diffKg / p.paceKg;
       const daysRemaining = Math.round(weeksRemaining * 7);
-
-      const latestLogDateStr = appData.logs.length ? appData.logs[appData.logs.length - 1].date : new Date().toISOString().slice(0, 10);
+      const logs = getCurrentProfileLogs();
+      const latestLogDateStr = logs.length ? logs[logs.length - 1].date : new Date().toISOString().slice(0, 10);
       const baseDate = new Date(latestLogDateStr);
       
       const projectedDate = new Date(baseDate);
       projectedDate.setDate(projectedDate.getDate() + daysRemaining);
 
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      const formattedDate = projectedDate.toLocaleDateString('en-US', options);
-
+      const formattedDate = projectedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
       document.getElementById('target-hit-date-display').innerText = formattedDate;
-      document.getElementById('target-weeks-left-display').innerText = `Est. ${Math.ceil(weeksRemaining)} weeks remaining at steady 1.0 kg/week fat loss`;
+      document.getElementById('target-weeks-left-display').innerText = `Est. ${Math.ceil(weeksRemaining)} weeks remaining at steady ${p.paceKg} kg/week fat loss`;
+    }
+
+    function applyThemeStyles() {
+      const p = PROFILES[currentProfileKey];
+      const isPink = p.theme === 'pink';
+
+      const mannyBtn = document.getElementById('profile-manny-btn');
+      const simranBtn = document.getElementById('profile-simran-btn');
+      
+      if (!isPink) {
+        mannyBtn.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow";
+        simranBtn.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
+      } else {
+        simranBtn.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-pink-500 text-slate-950 shadow";
+        mannyBtn.className = "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
+      }
+
+      document.getElementById('header-subtitle').innerText = p.subtitle;
+      
+      // Update theme classes dynamically
+      document.querySelectorAll('.theme-text').forEach(el => {
+        el.classList.remove('text-emerald-400', 'text-pink-400');
+        el.classList.add(isPink ? 'text-pink-400' : 'text-emerald-400');
+      });
+      document.querySelectorAll('.theme-btn').forEach(el => {
+        el.classList.remove('bg-emerald-500', 'bg-pink-500');
+        el.classList.add(isPink ? 'bg-pink-500' : 'bg-emerald-500');
+      });
+
+      const iconBox = document.getElementById('header-icon-box');
+      iconBox.className = isPink 
+        ? "w-10 h-10 rounded-xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-400"
+        : "w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400";
+
+      const projIcon = document.getElementById('projection-icon');
+      projIcon.className = isPink
+        ? "w-12 h-12 rounded-2xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-400 flex-shrink-0"
+        : "w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0";
+
+      const projLabel = document.getElementById('projection-label');
+      projLabel.className = isPink ? "text-[10px] md:text-xs uppercase font-bold tracking-wider text-pink-400 block" : "text-[10px] md:text-xs uppercase font-bold tracking-wider text-emerald-400 block";
+
+      const projCard = document.getElementById('projection-card');
+      projCard.className = isPink
+        ? "glass-card rounded-2xl p-4 md:p-5 border border-pink-500/30 bg-gradient-to-r from-pink-950/40 via-slate-900/80 to-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4"
+        : "glass-card rounded-2xl p-4 md:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-slate-900/90 flex flex-col sm:flex-row items-center justify-between gap-4";
+
+      document.getElementById('pace-display').innerText = `${p.paceKg} kg/wk`;
+      document.getElementById('pace-card-val').innerText = `${p.paceKg} kg / wk`;
+      document.getElementById('target-weight-input').value = appData[currentProfileKey].targetWeight.toFixed(1);
     }
 
     function renderAll() {
+      applyThemeStyles();
       const cw = getCurrentWeight();
-      document.getElementById('current-weight-display').innerText = `${cw.toFixed(1)} kg`;
-      document.getElementById('target-weight-input').value = appData.targetWeight.toFixed(1);
+      const p = PROFILES[currentProfileKey];
+      const isPink = p.theme === 'pink';
+
+      const curWeightEl = document.getElementById('current-weight-display');
+      curWeightEl.innerText = `${cw.toFixed(1)} kg`;
+      curWeightEl.className = isPink ? "text-base md:text-2xl font-black text-pink-400" : "text-base md:text-2xl font-black text-emerald-400";
+
       document.getElementById('daily-calories-display').innerText = `${calculateCaloriesForWeight(cw).toLocaleString()} kcal`;
       
       updateGoalProjection();
@@ -619,12 +726,15 @@
     }
 
     function renderMeals() {
-      const scale = getCurrentWeight() / BASE_WEIGHT;
+      const p = PROFILES[currentProfileKey];
+      // Ratio relative to profile base weight for Simran vs Manny portions
+      const scale = getCurrentWeight() / p.baseWeight;
+      const baseCalMult = p.baseCalories / 1930; // Scales overall meal calories relative to Manny's baseline
 
-      // Meal 1
-      const m1Oats = Math.round(206 * scale);
-      const m1Curd = Math.round(170 * scale);
-      const m1Pb = Math.round(244 * scale);
+      // Meal 1 (Breakfast)
+      const m1Oats = Math.round(206 * scale * baseCalMult);
+      const m1Curd = Math.round(170 * scale * baseCalMult);
+      const m1Pb = Math.round(244 * scale * baseCalMult);
       document.getElementById('m1-ing-oats').innerText = `${Math.round(55 * scale)} g`;
       document.getElementById('m1-cal-oats').innerText = `${m1Oats} kcal`;
       document.getElementById('m1-ing-curd').innerText = `${Math.round(250 * scale)} g`;
@@ -634,121 +744,122 @@
       document.getElementById('m1-total-header').innerText = `${m1Oats + m1Curd + m1Pb} kcal`;
 
       // Lunch Option A
-      const m2aPan = Math.round(476 * scale);
-      const m2aCurd = Math.round(102 * scale);
-      const m2aGhee = Math.round(54 * scale);
-      const m2aVeg = Math.round(28 * scale);
+      const m2aPan = Math.round(476 * scale * baseCalMult);
+      const m2aCurd = Math.round(102 * scale * baseCalMult);
+      const m2aGhee = Math.round(54 * scale * baseCalMult);
+      const m2aVeg = Math.round(28 * scale * baseCalMult);
       document.getElementById('m2a-ing-paneer').innerText = `${Math.round(180 * scale)} g`;
       document.getElementById('m2a-cal-paneer').innerText = `${m2aPan} kcal`;
       document.getElementById('m2a-ing-curd').innerText = `${Math.round(150 * scale)} g`;
       document.getElementById('m2a-cal-curd').innerText = `${m2aCurd} kcal`;
-      document.getElementById('m2a-ing-ghee').innerText = `${(1.2 * scale).toFixed(1)} tsp (${Math.round(6 * scale)}g)`;
+      document.getElementById('m2a-ing-ghee').innerText = `${(1.2 * scale).toFixed(1)} tsp`;
       document.getElementById('m2a-cal-ghee').innerText = `${m2aGhee} kcal`;
       document.getElementById('m2a-cal-veg').innerText = `${m2aVeg} kcal`;
-      document.getElementById('m2a-total-sum').innerText = `${m2aPan + m2aCurd + m2aGhee + m2aVeg} kcal total • 38.1g Protein`;
+      document.getElementById('m2a-total-sum').innerText = `${m2aPan + m2aCurd + m2aGhee + m2aVeg} kcal total`;
 
       // Lunch Option B
-      const m2bSoya = Math.round(242 * scale);
-      const m2bCurd = Math.round(136 * scale);
-      const m2bGhee = Math.round(108 * scale);
-      const m2bVeg = Math.round(74 * scale);
+      const m2bSoya = Math.round(242 * scale * baseCalMult);
+      const m2bCurd = Math.round(136 * scale * baseCalMult);
+      const m2bGhee = Math.round(108 * scale * baseCalMult);
+      const m2bVeg = Math.round(74 * scale * baseCalMult);
       document.getElementById('m2b-ing-soya').innerText = `${Math.round(70 * scale)} g`;
       document.getElementById('m2b-cal-soya').innerText = `${m2bSoya} kcal`;
       document.getElementById('m2b-ing-curd').innerText = `${Math.round(200 * scale)} g`;
       document.getElementById('m2b-cal-curd').innerText = `${m2bCurd} kcal`;
-      document.getElementById('m2b-ing-ghee').innerText = `${(2.4 * scale).toFixed(1)} tsp (${Math.round(12 * scale)}g)`;
+      document.getElementById('m2b-ing-ghee').innerText = `${(2.4 * scale).toFixed(1)} tsp`;
       document.getElementById('m2b-cal-ghee').innerText = `${m2bGhee} kcal`;
       document.getElementById('m2b-cal-veg').innerText = `${m2bVeg} kcal`;
-      document.getElementById('m2b-total-sum').innerText = `${m2bSoya + m2bCurd + m2bGhee + m2bVeg} kcal total • 43.8g Protein`;
+      document.getElementById('m2b-total-sum').innerText = `${m2bSoya + m2bCurd + m2bGhee + m2bVeg} kcal total`;
 
       // Lunch Option C
-      const m2cChan = Math.round(378 * scale);
-      const m2cCurd = Math.round(102 * scale);
-      const m2cGhee = Math.round(108 * scale);
-      const m2cVeg = Math.round(72 * scale);
+      const m2cChan = Math.round(378 * scale * baseCalMult);
+      const m2cCurd = Math.round(102 * scale * baseCalMult);
+      const m2cGhee = Math.round(108 * scale * baseCalMult);
+      const m2cVeg = Math.round(72 * scale * baseCalMult);
       document.getElementById('m2c-ing-chana').innerText = `${Math.round(100 * scale)} g`;
       document.getElementById('m2c-cal-chana').innerText = `${m2cChan} kcal`;
       document.getElementById('m2c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
       document.getElementById('m2c-cal-curd').innerText = `${m2cCurd} kcal`;
-      document.getElementById('m2c-ing-ghee').innerText = `${(2.4 * scale).toFixed(1)} tsp (${Math.round(12 * scale)}g)`;
+      document.getElementById('m2c-ing-ghee').innerText = `${(2.4 * scale).toFixed(1)} tsp`;
       document.getElementById('m2c-cal-ghee').innerText = `${m2cGhee} kcal`;
       document.getElementById('m2c-cal-veg').innerText = `${m2cVeg} kcal`;
-      document.getElementById('m2c-total-sum').innerText = `${m2cChan + m2cCurd + m2cGhee + m2cVeg} kcal total • 32.1g Protein`;
+      document.getElementById('m2c-total-sum').innerText = `${m2cChan + m2cCurd + m2cGhee + m2cVeg} kcal total`;
 
-      const lunchA = document.getElementById('lunch-a-btn'), lunchB = document.getElementById('lunch-b-btn'), lunchC = document.getElementById('lunch-c-btn');
-      const divLA = document.getElementById('lunch-option-a'), divLB = document.getElementById('lunch-option-b'), divLC = document.getElementById('lunch-option-c');
-      const activeLunch = appData.activeLunchOption || 'A';
-      
-      lunchA.className = activeLunch === 'A' ? "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
-      lunchB.className = activeLunch === 'B' ? "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
-      lunchC.className = activeLunch === 'C' ? "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
-
-      divLA.classList.toggle('hidden', activeLunch !== 'A');
-      divLB.classList.toggle('hidden', activeLunch !== 'B');
-      divLC.classList.toggle('hidden', activeLunch !== 'C');
+      const activeLunch = appData[currentProfileKey].activeLunchOption || 'A';
+      ['A', 'B', 'C'].forEach(opt => {
+        const btn = document.getElementById(`lunch-${opt.toLowerCase()}-btn`);
+        const div = document.getElementById(`lunch-option-${opt.toLowerCase()}`);
+        const isSel = activeLunch === opt;
+        div.classList.toggle('hidden', !isSel);
+        btn.className = isSel 
+          ? `px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${p.theme === 'pink' ? 'bg-pink-500 text-slate-950 shadow' : 'bg-emerald-500 text-slate-950 shadow'}`
+          : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
+      });
 
       // Dinner Option A
-      const m3aTof = Math.round(281 * scale);
-      const m3aHum = Math.round(240 * scale);
-      const m3aGhe = Math.round(72 * scale);
-      const m3aVeg = Math.round(57 * scale);
+      const m3aTof = Math.round(281 * scale * baseCalMult);
+      const m3aHum = Math.round(240 * scale * baseCalMult);
+      const m3aGhe = Math.round(72 * scale * baseCalMult);
+      const m3aVeg = Math.round(57 * scale * baseCalMult);
       document.getElementById('m3a-ing-tofu').innerText = `${Math.round(240 * scale)} g`;
       document.getElementById('m3a-cal-tofu').innerText = `${m3aTof} kcal`;
       document.getElementById('m3a-ing-hummus').innerText = `${Math.round(80 * scale)} g`;
       document.getElementById('m3a-cal-hummus').innerText = `${m3aHum} kcal`;
-      document.getElementById('m3a-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp (${Math.round(8 * scale)}g)`;
+      document.getElementById('m3a-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp`;
       document.getElementById('m3a-cal-ghee').innerText = `${m3aGhe} kcal`;
       document.getElementById('m3a-cal-veg').innerText = `${m3aVeg} kcal`;
-      document.getElementById('m3a-total-sum').innerText = `${m3aTof + m3aHum + m3aGhe + m3aVeg} kcal total • 39.2g Protein`;
+      document.getElementById('m3a-total-sum').innerText = `${m3aTof + m3aHum + m3aGhe + m3aVeg} kcal total`;
 
       // Dinner Option B
-      const m3bTof = Math.round(269 * scale);
-      const m3bDaa = Math.round(252 * scale);
-      const m3bGhe = Math.round(72 * scale);
-      const m3bVeg = Math.round(57 * scale);
+      const m3bTof = Math.round(269 * scale * baseCalMult);
+      const m3bDaa = Math.round(252 * scale * baseCalMult);
+      const m3bGhe = Math.round(72 * scale * baseCalMult);
+      const m3bVeg = Math.round(57 * scale * baseCalMult);
       document.getElementById('m3b-ing-tofu').innerText = `${Math.round(230 * scale)} g`;
       document.getElementById('m3b-cal-tofu').innerText = `${m3bTof} kcal`;
       document.getElementById('m3b-ing-daal').innerText = `${Math.round(70 * scale)} g`;
       document.getElementById('m3b-cal-daal').innerText = `${m3bDaa} kcal`;
-      document.getElementById('m3b-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp (${Math.round(8 * scale)}g)`;
+      document.getElementById('m3b-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp`;
       document.getElementById('m3b-cal-ghee').innerText = `${m3bGhe} kcal`;
       document.getElementById('m3b-cal-veg').innerText = `${m3bVeg} kcal`;
-      document.getElementById('m3b-total-sum').innerText = `${m3bTof + m3bDaa + m3bGhe + m3bVeg} kcal total • 47.1g Protein`;
+      document.getElementById('m3b-total-sum').innerText = `${m3bTof + m3bDaa + m3bGhe + m3bVeg} kcal total`;
 
       // Dinner Option C
-      const m3cCho = Math.round(286 * scale);
-      const m3cTof = Math.round(164 * scale);
-      const m3cCur = Math.round(102 * scale);
-      const m3cGhe = Math.round(72 * scale);
-      const m3cVeg = Math.round(26 * scale);
+      const m3cCho = Math.round(286 * scale * baseCalMult);
+      const m3cTof = Math.round(164 * scale * baseCalMult);
+      const m3cCur = Math.round(102 * scale * baseCalMult);
+      const m3cGhe = Math.round(72 * scale * baseCalMult);
+      const m3cVeg = Math.round(26 * scale * baseCalMult);
       document.getElementById('m3c-ing-chole').innerText = `${Math.round(80 * scale)} g`;
       document.getElementById('m3c-cal-chole').innerText = `${m3cCho} kcal`;
       document.getElementById('m3c-ing-tofu').innerText = `${Math.round(140 * scale)} g`;
       document.getElementById('m3c-cal-tofu').innerText = `${m3cTof} kcal`;
       document.getElementById('m3c-ing-curd').innerText = `${Math.round(150 * scale)} g`;
       document.getElementById('m3c-cal-curd').innerText = `${m3cCur} kcal`;
-      document.getElementById('m3c-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp (${Math.round(8 * scale)}g)`;
+      document.getElementById('m3c-ing-ghee').innerText = `${(1.6 * scale).toFixed(1)} tsp`;
       document.getElementById('m3c-cal-ghee').innerText = `${m3cGhe} kcal`;
       document.getElementById('m3c-cal-veg').innerText = `${m3cVeg} kcal`;
-      document.getElementById('m3c-total-sum').innerText = `${m3cCho + m3cTof + m3cCur + m3cGhe + m3cVeg} kcal total • 41.2g Protein`;
+      document.getElementById('m3c-total-sum').innerText = `${m3cCho + m3cTof + m3cCur + m3cGhe + m3cVeg} kcal total`;
 
-      const optA = document.getElementById('opt-a-btn'), optB = document.getElementById('opt-b-btn'), optC = document.getElementById('opt-c-btn');
-      const divDA = document.getElementById('dinner-option-a'), divDB = document.getElementById('dinner-option-b'), divDC = document.getElementById('dinner-option-c');
-      const activeDinner = appData.activeDinnerOption || 'A';
-
-      optA.className = activeDinner === 'A' ? "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
-      optB.className = activeDinner === 'B' ? "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
-      optC.className = activeDinner === 'C' ? "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow" : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
-
-      divDA.classList.toggle('hidden', activeDinner !== 'A');
-      divDB.classList.toggle('hidden', activeDinner !== 'B');
-      divDC.classList.toggle('hidden', activeDinner !== 'C');
+      const activeDinner = appData[currentProfileKey].activeDinnerOption || 'A';
+      ['a', 'b', 'c'].forEach(opt => {
+        const btn = document.getElementById(`opt-${opt}-btn`);
+        const div = document.getElementById(`dinner-option-${opt}`);
+        const isSel = activeDinner === opt.toUpperCase();
+        div.classList.toggle('hidden', !isSel);
+        btn.className = isSel 
+          ? `px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${p.theme === 'pink' ? 'bg-pink-500 text-slate-950 shadow' : 'bg-emerald-500 text-slate-950 shadow'}`
+          : "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400";
+      });
     }
 
     function renderLogsTable() {
       const container = document.getElementById('logs-list-container');
       container.innerHTML = '';
-      [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(log => {
+      const logs = getCurrentProfileLogs();
+      const p = PROFILES[currentProfileKey];
+
+      [...logs].sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(log => {
         const div = document.createElement('div');
         div.className = "p-3 md:p-4 flex justify-between items-center";
         div.innerHTML = `
@@ -757,7 +868,7 @@
             <span class="text-[10px] md:text-xs text-slate-400">${calculateCaloriesForWeight(log.weight)} kcal target</span>
           </div>
           <div class="flex items-center space-x-3">
-            <span class="font-extrabold text-emerald-400 text-sm md:text-base">${log.weight.toFixed(1)} kg</span>
+            <span class="font-extrabold ${p.theme === 'pink' ? 'text-pink-400' : 'text-emerald-400'} text-sm md:text-base">${log.weight.toFixed(1)} kg</span>
             <button onclick="deleteLog('${log.date}')" class="text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
           </div>
         `;
@@ -770,39 +881,52 @@
       const date = document.getElementById('log-date').value;
       const weight = parseFloat(document.getElementById('log-weight').value);
       if (!date || !weight) return;
-      const idx = appData.logs.findIndex(l => l.date === date);
-      if (idx >= 0) appData.logs[idx].weight = weight; else appData.logs.push({ date, weight });
-      appData.logs.sort((a,b) => new Date(a.date) - new Date(b.date));
-      saveData(); renderAll();
+      
+      const logs = appData[currentProfileKey].logs;
+      const idx = logs.findIndex(l => l.date === date);
+      if (idx >= 0) logs[idx].weight = weight;
+      else logs.push({ date, weight });
+      
+      logs.sort((a,b) => new Date(a.date) - new Date(b.date));
+      saveData();
+      renderAll();
       document.getElementById('log-weight').value = '';
     }
 
     function deleteLog(date) {
-      if (appData.logs.length <= 1) { alert("Cannot delete baseline entry."); return; }
-      if (confirm(`Delete weigh-in for ${date}?`)) { appData.logs = appData.logs.filter(l => l.date !== date); saveData(); renderAll(); }
+      const logs = appData[currentProfileKey].logs;
+      if (logs.length <= 1) { alert("Cannot delete baseline entry."); return; }
+      if (confirm(`Delete weigh-in for ${date}?`)) {
+        appData[currentProfileKey].logs = logs.filter(l => l.date !== date);
+        saveData();
+        renderAll();
+      }
     }
 
     function openGroceryModal() {
-      const modal = document.getElementById('grocery-modal'), container = document.getElementById('grocery-items-container'), r = getCurrentWeight() / BASE_WEIGHT;
-      const lunchOpt = appData.activeLunchOption || 'A';
-      const dinnerOpt = appData.activeDinnerOption || 'A';
+      const modal = document.getElementById('grocery-modal');
+      const container = document.getElementById('grocery-items-container');
+      const p = PROFILES[currentProfileKey];
+      const r = getCurrentWeight() / p.baseWeight;
+      const lunchOpt = appData[currentProfileKey].activeLunchOption || 'A';
+      const dinnerOpt = appData[currentProfileKey].activeDinnerOption || 'A';
 
       const items = [
         { name: "Rolled Oats (Dry)", amount: `${Math.round(55 * r * 7)} g` },
         { name: "Full-Fat Curd", amount: `${((250 + (lunchOpt === 'B' ? 200 : 150) + (dinnerOpt === 'C' ? 150 : 0)) * r * 7 / 1000).toFixed(2)} kg` },
-        { name: "Pure Desi Ghee", amount: `${Math.round((lunchOpt === 'B' || lunchOpt === 'C' ? 12 : 6) + (dinnerOpt ? 8 : 8) * r * 7)} g` },
+        { name: "Pure Desi Ghee", amount: `${Math.round(((lunchOpt === 'B' || lunchOpt === 'C' ? 12 : 6) + 8) * r * 7)} g` },
         { name: "Peanut Butter", amount: `${Math.round(40 * r * 7)} g` },
         { name: lunchOpt === 'A' ? "Fresh Paneer" : lunchOpt === 'B' ? "Soya Chunks" : "Kala Chana", amount: lunchOpt === 'A' ? `${(180 * r * 7 / 1000).toFixed(2)} kg` : `${Math.round((lunchOpt === 'B' ? 70 : 100) * r * 7)} g` },
         { name: dinnerOpt === 'C' ? "White Chana (Dry) + Tofu" : "Firm Tofu", amount: dinnerOpt === 'C' ? `${Math.round(80 * r * 7)} g Dry Chana / ${(140 * r * 7 / 1000).toFixed(2)} kg Tofu` : `${((dinnerOpt === 'A' ? 240 : 230) * r * 7 / 1000).toFixed(2)} kg` }
       ];
-      container.innerHTML = items.map(i => `<div class="flex justify-between p-2 rounded bg-slate-900/60 text-xs"><span class="text-slate-200">${i.name}</span><span class="font-bold text-emerald-400">${i.amount}</span></div>`).join('');
+      container.innerHTML = items.map(i => `<div class="flex justify-between p-2 rounded bg-slate-900/60 text-xs"><span class="text-slate-200">${i.name}</span><span class="font-bold ${p.theme === 'pink' ? 'text-pink-400' : 'text-emerald-400'}">${i.amount}</span></div>`).join('');
       modal.classList.remove('hidden');
     }
 
     function closeGroceryModal() { document.getElementById('grocery-modal').classList.add('hidden'); }
     function exportJSON() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-      const a = document.createElement('a'); a.href = dataStr; a.download = 'weight_data.json'; document.body.appendChild(a); a.click(); a.remove();
+      const a = document.createElement('a'); a.href = dataStr; a.download = 'multi_user_weight_data.json'; document.body.appendChild(a); a.click(); a.remove();
     }
     function importJSON() {
       const input = document.createElement('input'); input.type = 'file'; input.accept = 'application/json';
